@@ -809,4 +809,13 @@ label.checkbox-label {
 .bt{
     font-size: 12px;
     text-decoration: none;
+    background-color: #777;
+    border-radius: 3px;
+    padding: 3px 10px;
+    margin: 5px;
+    color:#fff;
+}
+.bt:hover
+{
+    background-color: darkorange;
 }
