@@ -756,7 +756,7 @@ label.checkbox-label {
     text-decoration: none;
     position: relative;
     font-size:75px;
-    line-height: 1;
+    line-height: 90px;
     color: #9e9ba4;
     display: inline-block;
 }
@@ -765,7 +765,7 @@ label.checkbox-label {
     text-transform: uppercase;
     font-weight: 900;
     overflow: hidden;
-    line-height: 1;
+    line-height: 90px;
     color: #b2b0a9;
 }
 
@@ -811,8 +811,8 @@ label.checkbox-label {
     text-decoration: none;
     background-color: #777;
     border-radius: 3px;
-    padding: 3px 10px;
-    margin: 5px;
+    padding:3px 10px;
+    margin:0px 5px;
     color:#fff;
 }
 .bt:hover
