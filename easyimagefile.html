@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="jQuery,easyimagefile,javascript,js,jq,jquery,图片上传,异步上传,插件">
+    <meta name="description" content="jQuery图片上传预览插件">
+
+    <title>jQuery.Easyform Demo</title>
+
+    <meta name="description" content="">
+    <meta http-equiv="cleartype" content="on">
+
+    <link rel="stylesheet" href="css/platform-1.css">
+    <link rel="stylesheet" href="../easyform/easyform.css">
+
+    <link rel="stylesheet" href="css/tab.css">
+
+    <script src="js/jquery-2.1.0.min.js"></script>
+    <script src="../easyform/easyform.js"></script>
+
+</head>
+<body>
+
+<div class="page">
+
+<div class="header">
+
+    <a class="link title-ani" href="https://github.com/thesmallcar/jQuery.easyform" target="_blank" data-letters="Easyimagefile">Easyimagefile</a>
+    <br>
+
+    <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/zipball/master">download .zip</a>
+    <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/tarball/master">download .tar.gz</a>
+    <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform" target="_blank">github</a>
+
+</div>
+
+<div class="form-div">
+    <form id="reg-form" action="" method="post">
+        
+
+        <div class="buttons" style="margin-top: 50px;">
+            <input value="注 册" type="submit" style="margin-right:20px; margin-top:20px;">
+            <input value="我有账号，我要登录" type="button" style="margin-right:45px; margin-top:20px;">
+        </div>
+
+        <br class="clear">
+    </form>
+</div>
+
+<!--easyform-->
+<div class="source-div">
+
+<h3>easyform</h3>
+
+<input id="tab6" type="radio" name="tabs" checked class="tab-input">
+<label for="tab6">说明</label>
+
+<input id="tab7" type="radio" name="tabs" class="tab-input">
+<label for="tab7">规则定义</label>
+
+<input id="tab8" type="radio" name="tabs" class="tab-input">
+<label for="tab8">规则列表</label>
+
+<input id="tab9" type="radio" name="tabs" class="tab-input">
+<label for="tab9">属性</label>
+
+<input id="tab10" type="radio" name="tabs" class="tab-input">
+<label for="tab10">事件</label>
+
+<input id="tab11" type="radio" name="tabs" class="tab-input">
+<label for="tab11">版本记录</label>
+
+<section id="content6">
+    <p>easyform包含两个类，easyform和easyinput。easyinput负责搞定单个对象的规则验证，很显然，easyform负责调用easyinput。</p>
+</section>
+
+<section id="content7">
+    <p>
+        你可以这样定义一个input，并且为它添加一些规则和提示信息。
+    </p>
+
+    <p class="code">
+        &lt;<span class="keyword">input</span> <span class="attr">name</span>=<span class="value">"uid"</span>
+        <span class="attr">type</span>=<span class="value">"text"</span> <span class="attr">id</span>=<span
+            class="value">"uid"</span>
+        <span class="attr">data-easyform</span>=<span class="value">"length:4 16;char-normal;"</span>
+        <span class="attr">data-message</span>=<span class="value">"用户名必须为4—16位的英文字母或数字"</span>
+        <span class="attr">data-easytip</span>=<span class="value">"position:top;"</span>&gt;
+    </p>
+
+    <p>
+        data-easyform 属性后面可以写上你所需要的规则，用半角的分号连接。语法上有些像css。这个属性不是必须的，你如果什么都不写，那么默认，这个控件的值不能为空，其余无任何规则。
+    </p>
+
+    <p>
+        data-message 属性是一个默认的提示信息，如果你连这个都不写，那么遇到错误时，会默认提示“格式错误”。你如果需要一个更好的提示信息，写在这里就可以。
+    </p>
+
+    <p>
+        data-easytip 这个属性是easytip的配置属性，可以不写，这样easytip就会按照默认的样式和行为初始化。
+    </p>
+
+</section>
+
+<section id="content8" style="text-align: center;">
+    <table class="option">
+        <thead>
+        <tr>
+            <th>规则名称</th>
+            <th width="400">说明</th>
+            <th width="40">类型</th>
+            <th>默认值</th>
+            <th>示例</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>null</td>
+            <td>是否可为空</td>
+            <td>无</td>
+            <td>默认所有值都是必填项</td>
+            <td>data-easyform="null;"</td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td>Email地址</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="email;"</td>
+        </tr>
+        <tr>
+            <td>char-normal</td>
+            <td>只能为英文、数字、下划线</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="char-normal;"</td>
+        </tr>
+        <tr>
+            <td>char-chinese</td>
+            <td>只能为中文、英文、数字、下划线、中文标点符号</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="char-chinese;"</td>
+        </tr>
+        <tr>
+            <td>char-english</td>
+            <td>只能为英文、数字、下划线、英文标点符号</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="char-english;"</td>
+        </tr>
+        <tr>
+            <td>length</td>
+            <td>长度限制，可以设置最大值和最小值，如果仅设置了一个值，则长度必须为该长度。</td>
+            <td>int</td>
+            <td>无</td>
+            <td>data-easyform="length:1 10;"<br>data-easyform="length:6;"</td>
+        </tr>
+        <tr>
+            <td>equal</td>
+            <td>是否与某值相等，可以用来判断密码确认。</td>
+            <td>string</td>
+            <td>无</td>
+            <td>data-easyform="equal:#psw1;"</td>
+        </tr>
+        <tr>
+            <td>ajax</td>
+            <td>ajax验证，异步。需要通过easyform-ajax事件来返回验证结果。</td>
+            <td>string</td>
+            <td>无</td>
+            <td>data-easyform="ajax:fun(1);"</td>
+        </tr>
+        <tr>
+            <td>real-time</td>
+            <td>实时检查。如果设置实时检查，则对象每次失去焦点时就会验证一次。</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="real-time;"</td>
+        </tr>
+        <tr>
+            <td>date</td>
+            <td>日期格式 yyyy-mm-dd</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="date;"</td>
+        </tr>
+        <tr>
+            <td>time</td>
+            <td>时间格式 hh:mm:ss</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="time;"</td>
+        </tr>
+        <tr>
+            <td>datetime</td>
+            <td>日期时间格式 yyyy-mm-dd hh:mm:ss</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="datetime;"</td>
+        </tr>
+        <tr>
+            <td>money</td>
+            <td>金额格式，等同于float:10 2</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="money;"</td>
+        </tr>
+        <tr>
+            <td>uint</td>
+            <td>无符号正整数 , 参数为起始值和最大值</td>
+            <td>int</td>
+            <td>默认最大值999999999999999</td>
+            <td>data-easyform="uint:1 100;"</td>
+        </tr>
+        <tr>
+            <td>number</td>
+            <td>数字字符串，只能是数字，不含小数点</td>
+            <td>无</td>
+            <td>无</td>
+            <td>data-easyform="number;"</td>
+        </tr>
+        <tr>
+            <td>float</td>
+            <td>浮点数</td>
+            <td>int</td>
+            <td>无</td>
+            <td>data-easyform="float:7 2;"</td>
+        </tr>
+        <tr>
+            <td>regex</td>
+            <td>自定义正则表达式</td>
+            <td>string</td>
+            <td>无</td>
+            <td>data-easyform="^(\\d{4})-(\\d{2})-(\\d{2})$;"</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+<section id="content9">
+    <p>
+        easyform的属性可以在html里或者js中配置，两种方式选择一种即可。
+    </p>
+
+    <div style="text-align: center;">
+        <table class="option">
+            <thead>
+            <tr>
+                <th>选项</th>
+                <th>说明</th>
+                <th>可选值</th>
+                <th>默认值</th>
+                <th>js示例</th>
+                <th>html示例</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>easytip</td>
+                <td>是否显示easytip</td>
+                <td>true/false</td>
+                <td>true</td>
+                <td>$("#form").easyform({easytip:true});</td>
+                <td>data-easyform="easytip:false;"</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+<section id="content10" style="text-align: center;">
+
+    <table class="option">
+        <thead>
+        <tr>
+            <th width="80">事件</th>
+            <th width="500">说明</th>
+            <th width="80">参数</th>
+            <th>示例</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>success</td>
+            <td>成功事件，所有规则成功后，触发该事件。该事件的触发在提交之前。</td>
+            <td>easyform</td>
+            <td>
+                var ef = $('#demo-form').easyform();<br>
+                ef.success = function(ef){ ... }
+            </td>
+        </tr>
+        <tr>
+            <td>error</td>
+            <td>错误事件，每一个发生错误的控件都会触发该事件。一次验证，所有规则都会执行，一个控件上可能同时触发多个error事件。</td>
+            <td>easyform, input, rule</td>
+            <td>
+                var ef = $('#demo-form').easyform();<br>
+                ef.error = function(ef, i, r){ ... }
+            </td>
+        </tr>
+        <tr>
+            <td>per_validation</td>
+            <td>预验证事件，在所有验证规则之前执行。该事件的响应函数如果返回false，则会打断提交。</td>
+            <td>easyform</td>
+            <td>
+                var ef = $('#demo-form').easyform();<br>
+                ef.per_validation = function(ef){ ... }
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</section>
+
+<section id="content11">
+
+    <ul>
+        <li>v1.2 2015-5-24 修改了很多bug，对代码进行了重构。属性定义修改成了html5的标准命名。所以1.2版本不兼容过去的老版本。不过无所谓了，你们也找不到老版本。</li>
+        <li>v1.1 2014-11-21 支持ajax异步验证。修正了若干bug。</li>
+        <li>v1.0 2014-11-5 第一版完成。</li>
+    </ul>
+
+</section>
+
+</div>
+
+
+<div class="footer">
+    十分感谢你的光临，如果有什么问题，可以加QQ群，222578556（Hello PHP），我是群主：大树。
+</div>
+
+</div>
+
+
+
+<script>
+
+    $(document).ready(function ()
+    {
+
+    });
+
+
+</script>
+
+</body>
+</html>
