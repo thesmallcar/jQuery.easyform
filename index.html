@@ -425,9 +425,10 @@
 <section id="content11">
 
     <ul>
-        <li>v1.2 2015-5-24 修改了很多bug，对代码进行了重构。属性定义修改成了html5的标准命名。所以1.2版本不兼容过去的老版本。不过无所谓了，你们也找不到老版本。</li>
-        <li>v1.1 2014-11-21 支持ajax异步验证。修正了若干bug。</li>
-        <li>v1.0 2014-11-5 第一版完成。</li>
+        <li>2015-5-24 修改了很多bug，对代码进行了重构。属性定义修改成了html5的标准命名。所以这个版本不兼容过去的老版本。不过无所谓了，你们也找不到老版本。</li>
+        <li>2014-11-21 支持ajax异步验证。修正了若干bug。</li>
+        <li>2014-11-18 支持实时检查。支持多条件的提示信息。</li>
+        <li>2014-11-5 第一版完成。</li>
     </ul>
 
 </section>
@@ -444,6 +445,9 @@
 
     <input id="tab15" type="radio" name="tabs3" class="tab-input">
     <label for="tab15">正则表达式</label>
+
+    <input id="tab17" type="radio" name="tabs3" class="tab-input">
+    <label for="tab17">message</label>
 
     <input id="tab16" type="radio" name="tabs3" class="tab-input">
     <label for="tab16">radio & checkbox</label>
@@ -469,6 +473,12 @@
 
         <p>类似这样的定义即可。需要注意的是\\需要写两次，因为会被转意，而开头和结尾的/不要写进去。</p>
 
+    </section>
+
+    <section id="content17">
+    <p>data-message属性可以定义一个提示信息，例如“出错啦！”，但有时候仅仅这样是不够的，我们想按照不同的错误给出不同的提示信息，这样才能提供更好的用户体验！</p>
+    <p>于是，我们可以这样定义 data-message-length 或者 data-messgae-ajax，在不同情况，定义不一样的提示。data-message-<规则名称> 就可以根据规则定义不同的提示。当然，你不必为每一个规则都定义一句话，那样太傻了，所以默认的data-message将为每一个没有特例的规则提供默认的信息。</p>
+    <p>最后，你其实也可以不定义任何message，默认会有那么一句话——“格式错误”。</p>
     </section>
 
     <section id="content16">
