@@ -1,51 +1,7 @@
 /*
- * 表单验证插件 easyform
+ * 图片上传预览插件 easyimagefile
  * Author : 李兰非
- * 2014-11-5
- * 用于表单验证
- * 只要在需要验证的控件上添加easyform属性即可，多个属性用[;]连接，语法类似css
- * 属性列表：
- *      null
- *      email
- *      char-normal         英文、数字、下划线
- *      char-chinese        中文、英文、数字、下划线、中文标点符号
- *      char-english        英文、数字、下划线、英文标点符号
- *      length:1 10 / length:4      能够识别汉字等宽字符长度
- *      equal:xxx                               等于某个对象的值，冒号后是jq选择器语法
- *      ajax:fun()
- *      real-time                               实时检查
- *      date                    2014-10-31
- *      time                    10:30:00
- *      datetime            2014-10-31 10:30:00
- *      money               正数，两位小数
- *      uint :1 100                 正整数 , 参数为起始值和最大值
- *      number              不限长度的数字字符串
- *      float:7 2
- *
- *
- *  ------ requirement list ----------------------------------------------------
- * 1. 2014-11-18 没有排除隐藏起来的input和hidden类型的input
- * 2. 2014-11-18 需要支持有条件的提示信息。
- * 3. 2014-11-19 ajax不支持异步
- * 4. 2014-11-19 没有考虑file类型等特殊类型的判断
- * 5. 2014-11-20 当网页载入时有隐藏的控件，之后控件显示出来后，其关联的easytip不能正确显示位置
- * 6. 2014-11-21 目前不支持属性继承
- * 7. 2014-11-21 实时检查的时候，弹出的easytip有时候会导致弹出信息的消息出错
- * 8. 2015-4-10 input没有easyform属性时，不提交表单
- * 9. 需要添加一些事件，包括 提交、验证
- *
- *
- * ------ change list -------------------------------------------------
- * 1. 2014-11-18 requirement list 1 完成
- * 2. 2014-11-18 支持实时检查
- * 3. 2014-11-18 requirement list 2 完成
- * 4. 2014-11-20 requirement list 3支持了ajax异步验证方式。
- * 5. 2014-11-21 requirement list 5完成
- * 6. 2015-4-12 requirement list 8完成
- * 7. 2015-5-11 正确识别汉字长度
- *
- * ------ DEMO  -------------------------------------------------
- * <input type="text" id="demo"  easyform="length:4 16;number;" message-number="必须是数字" message-length="长度错误">
+ * 有问题欢迎加入QQ群，222578556（Hello PHP），我是群主：大树。
  * */
 ;
 
@@ -54,118 +10,131 @@
  * @id string 控件id
  * @name string 属性名称
  **/
-function easy_load_options(id, name)
+
+if (typeof(easy_load_options) == "undefined")
 {
-    var options = $("#" + id).data(name);
-
-    //将字符串用；分割
-    options = (!!options ? options.split(";") : undefined);
-
-    if (!!options)
+    function easy_load_options(id, name)
     {
-        var data = Object();
-        var index;
-        for (index in options)
+        var options = $("#" + id).data(name);
+
+        //将字符串用；分割
+        options = (!!options ? options.split(";") : undefined);
+
+        if (!!options)
         {
-            var temps = options[index];
-            var p = temps.indexOf(":");
-
-            var temp = [];
-            if (-1 == p)
+            var data = Object();
+            var index;
+            for (index in options)
             {
-                temp[0] = temps;
-                temp[1] = "";
-            }
-            else
-            {
-                temp[0] = temps.substring(0, p);
-                temp[1] = temps.substring(p + 1);
-            }
+                var temps = options[index];
+                var p = temps.indexOf(":");
 
-            if (temp[0].length > 0)
-                data[temp[0]] = temp[1];
-        }
-    }
-
-    return data;
-}
-
-function get_js_path(jsFileName)
-{
-    var e = {};
-    var htmlPath = "";
-    var jsPath = "";
-    if (document.location.protocol == 'file:')
-    {
-        e.BasePath = unescape(document.location.pathname.substr(1));
-        e.BasePath = e.BasePath.replace(/\\/gi, '/');
-        e.BasePath = 'file://' + e.BasePath.substring(0, e.BasePath.lastIndexOf('/') + 1);
-        e.FullBasePath = e.BasePath;
-    }
-    else
-    {
-        e.BasePath = document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
-        e.FullBasePath = document.location.protocol + '//' + document.location.host + e.BasePath;
-    }
-
-    htmlPath = e.FullBasePath;
-    var scriptTag = document.getElementsByTagName("script");
-    for (var i = 0; i < scriptTag.length; i++)
-    {
-        if (scriptTag[i].src.lastIndexOf(jsFileName) >= 0)
-        {
-            var src = scriptTag[i].src.replace(/\\/gi, '/');//把\转换为/
-            if (src.toLowerCase().indexOf("file://") == 0)
-            {//http全路径形式 file://
-                var _temp = src.substring(0, src.lastIndexOf('/') + 1);
-                jsPath = _temp;
-                //alert("file://")
-            }
-            else if (src.toLowerCase().indexOf("http://") == 0)
-            {//http全路径形式 http://
-                var _temp = src.substring(0, src.lastIndexOf('/') + 1);
-                jsPath = _temp;
-                //alert("http://")
-            }
-            else if (src.toLowerCase().indexOf("https://") == 0)
-            {//http全路径形式 https://
-                var _temp = src.substring(0, src.lastIndexOf('/') + 1);
-                jsPath = _temp;
-                //alert("https://")
-            }
-            else if (src.toLowerCase().indexOf("../") == 0)
-            {//相对路径形式 ../
-                jsPath = htmlPath + src.substring(0, src.lastIndexOf('/') + 1);
-                //alert("../")
-            }
-            else if (src.toLowerCase().indexOf("./") == 0)
-            {//相对路径形式 ./
-                jsPath = htmlPath + src.substring(0, src.lastIndexOf('/') + 1);
-                //alert("./")
-            } else if (src.toLowerCase().indexOf("/") == 0)
-            {//相对路径形式 /,只有采用http访问时有效
-                if (document.location.protocol == 'http:' || document.location.protocol == 'https:')
+                var temp = [];
+                if (-1 == p)
                 {
-                    var _temp = document.location.protocol + "//" + document.location.host + src.substring(0, src.lastIndexOf('/') + 1);
-                    jsPath = _temp;
+                    temp[0] = temps;
+                    temp[1] = "";
                 }
-                //alert("/")
-            }
-            else if (src.toLowerCase().search(/^([a-z]{1}):/) >= 0)
-            {//盘符形式 c:
-                var _temp = src.substring(0, src.lastIndexOf('/') + 1);
-                jsPath = _temp;
-                //alert("^([a-z]+):")
-            }
-            else
-            {//同级形式
-                jsPath = htmlPath;
+                else
+                {
+                    temp[0] = temps.substring(0, p);
+                    temp[1] = temps.substring(p + 1);
+                }
+
+                if (temp[0].length > 0)
+                    data[temp[0]] = temp[1];
             }
         }
-    }
 
-    return jsPath;
+        return data;
+    }
 }
+
+
+/*
+ * 获得指定js文件的绝对路径
+ * 该函数是网上找的，不知道谁写的，多谢了
+ * */
+if (typeof(get_js_path) == "undefined")
+{
+    function get_js_path(jsFileName)
+    {
+        var e = {};
+        var htmlPath = "";
+        var jsPath = "";
+        if (document.location.protocol == 'file:')
+        {
+            e.BasePath = unescape(document.location.pathname.substr(1));
+            e.BasePath = e.BasePath.replace(/\\/gi, '/');
+            e.BasePath = 'file://' + e.BasePath.substring(0, e.BasePath.lastIndexOf('/') + 1);
+            e.FullBasePath = e.BasePath;
+        }
+        else
+        {
+            e.BasePath = document.location.pathname.substring(0, document.location.pathname.lastIndexOf('/') + 1);
+            e.FullBasePath = document.location.protocol + '//' + document.location.host + e.BasePath;
+        }
+
+        htmlPath = e.FullBasePath;
+        var scriptTag = document.getElementsByTagName("script");
+        for (var i = 0; i < scriptTag.length; i++)
+        {
+            if (scriptTag[i].src.lastIndexOf(jsFileName) >= 0)
+            {
+                var src = scriptTag[i].src.replace(/\\/gi, '/');//把\转换为/
+                if (src.toLowerCase().indexOf("file://") == 0)
+                {//http全路径形式 file://
+                    var _temp = src.substring(0, src.lastIndexOf('/') + 1);
+                    jsPath = _temp;
+                    //alert("file://")
+                }
+                else if (src.toLowerCase().indexOf("http://") == 0)
+                {//http全路径形式 http://
+                    var _temp = src.substring(0, src.lastIndexOf('/') + 1);
+                    jsPath = _temp;
+                    //alert("http://")
+                }
+                else if (src.toLowerCase().indexOf("https://") == 0)
+                {//http全路径形式 https://
+                    var _temp = src.substring(0, src.lastIndexOf('/') + 1);
+                    jsPath = _temp;
+                    //alert("https://")
+                }
+                else if (src.toLowerCase().indexOf("../") == 0)
+                {//相对路径形式 ../
+                    jsPath = htmlPath + src.substring(0, src.lastIndexOf('/') + 1);
+                    //alert("../")
+                }
+                else if (src.toLowerCase().indexOf("./") == 0)
+                {//相对路径形式 ./
+                    jsPath = htmlPath + src.substring(0, src.lastIndexOf('/') + 1);
+                    //alert("./")
+                } else if (src.toLowerCase().indexOf("/") == 0)
+                {//相对路径形式 /,只有采用http访问时有效
+                    if (document.location.protocol == 'http:' || document.location.protocol == 'https:')
+                    {
+                        var _temp = document.location.protocol + "//" + document.location.host + src.substring(0, src.lastIndexOf('/') + 1);
+                        jsPath = _temp;
+                    }
+                    //alert("/")
+                }
+                else if (src.toLowerCase().search(/^([a-z]{1}):/) >= 0)
+                {//盘符形式 c:
+                    var _temp = src.substring(0, src.lastIndexOf('/') + 1);
+                    jsPath = _temp;
+                    //alert("^([a-z]+):")
+                }
+                else
+                {//同级形式
+                    jsPath = htmlPath;
+                }
+            }
+        }
+
+        return jsPath;
+    }
+}
+
 
 //easyimagefile 图片文件上传
 //TODO 替换内容的方式有问题，应该换成更好的html
