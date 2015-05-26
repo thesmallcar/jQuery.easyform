@@ -756,24 +756,24 @@ label.checkbox-label {
     text-decoration: none;
     position: relative;
     font-size:75px;
-    line-height: 1;
+    line-height: 90px;
     color: #9e9ba4;
     display: inline-block;
 }
 
-.link--kukuri {
+.title-ani {
     text-transform: uppercase;
     font-weight: 900;
     overflow: hidden;
-    line-height: 1;
+    line-height: 90px;
     color: #b2b0a9;
 }
 
-.link--kukuri:hover {
+.title-ani:hover {
     color: #b2b0a9;
 }
 
-.link--kukuri::after {
+.title-ani::after {
     content: '';
     position: absolute;
     height: 16px;
@@ -787,11 +787,11 @@ label.checkbox-label {
     transition-timing-function: cubic-bezier(0.7,0,0.3,1);
 }
 
-.link--kukuri:hover::after {
+.title-ani:hover::after {
     transform: translate3d(100%,0,0);
 }
 
-.link--kukuri::before {
+.title-ani::before {
     content: attr(data-letters);
     position: absolute;
     z-index: 2;
@@ -802,11 +802,20 @@ label.checkbox-label {
     transition: width 0.4s 0.3s;
 }
 
-.link--kukuri:hover::before {
+.title-ani:hover::before {
     width: 100%;
 }
 
 .bt{
     font-size: 12px;
     text-decoration: none;
+    background-color: #777;
+    border-radius: 3px;
+    padding:3px 10px;
+    margin:0px 5px;
+    color:#fff;
+}
+.bt:hover
+{
+    background-color: #3c6db0;
 }
