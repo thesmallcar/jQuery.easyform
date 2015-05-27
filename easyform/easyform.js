@@ -1,5 +1,6 @@
 /*
  * 表单验证插件 easyform
+ * http://thesmallcar.github.io/jQuery.easyform/
  * Author : 李兰非
  * 有问题欢迎加入QQ群，222578556（Hello PHP），我是群主：大树。
  * 2014-11-5
