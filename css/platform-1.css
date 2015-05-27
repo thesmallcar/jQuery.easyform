@@ -529,6 +529,19 @@ body {
     float: right;
 }
 
+.img-div
+{
+    background-color: rgba(255, 255, 255, 0.27);
+    border-radius: 3px;
+    border: 1px solid #aaa;
+    text-align: center;
+    width: 526px;
+    margin: 0 auto;
+    font-size: 16px;
+    padding: 10px 10px 10px 10px;
+    box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5), 0px 0px 15px rgba(75, 75, 75, 0.3);
+}
+
 .protocol {
     padding: 0px 20px 20px 20px;
     text-align: left;

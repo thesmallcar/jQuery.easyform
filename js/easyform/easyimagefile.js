@@ -142,12 +142,12 @@ if (typeof(get_js_path) == "undefined")
 //TODO 默认空白图片不对，可以考虑不使用img控件
 (function ($, window, document, undefined)
 {
-    var _easyimagefile = function (input, opt)
+    var _easyimagefile = function (img, opt)
     {
-        this.input = input;
-        this.id = input.attr('id');
+        this.img = img;
+        this.id = img.attr('id');
 
-        this.fileid = this.id + "-file";
+        this.fileid = this.id + "-";
         this.imgid = this.id + "-img";
         this.tipid = this.id + "-tip";
         this.delid = this.id + "-del";
@@ -155,7 +155,8 @@ if (typeof(get_js_path) == "undefined")
         this.last_file = null;
 
         this.defaults = {
-            "default": get_js_path("easyform.js") + "none.png"
+            "default": get_js_path("easyimagefile.js") + "none.png",
+            "type": "jpg|png"
         };
 
         this.options = $.extend({}, this.defaults, opt);
@@ -165,41 +166,39 @@ if (typeof(get_js_path) == "undefined")
 
         init: function ()
         {
-            var style = this.input.attr('style');
             var $this = this;
-            var src = this.input.attr('src');
+            var style = this.img.attr('style') == undefined ? this.img.attr('style') : "";
+            var sclass = this.img.attr('class') == undefined ? this.img.attr('class') : "";
+            var src = this.img.attr('src');
 
             if (!src || src.length == 0)
             {
                 src = $this.options.default;
             }
 
-
-            var sclass = this.input.attr('class');
-
-            var tip_text = this.input.attr('title');
+            var tip_text = this.img.attr('title');
 
             if (!tip_text) tip_text = "";
 
-            this.input.css("position", "relative");
+            this.img.css("position", "relative");
 
-            var x = this.input.position().left;
-            var y = this.input.position().top;
-            var w = this.input.outerWidth();
-            var h = this.input.outerHeight();
+            var x = this.img.position().left;
+            var y = this.img.position().top;
+            var w = this.img.outerWidth();
+            var h = this.img.outerHeight();
 
             var file = "<input type='file' name='" + $this.fileid + "'  id='" + $this.fileid + "' style='display:none;'>";
-            var img = "<img src='" + src + "' name='" + $this.imgid + "'  id='" + $this.imgid + "' style='" + style + ";cursor:pointer;' class='" + sclass + "'>";
+            var img = "<img src='" + src + "' name='" + $this.imgid + "'  id='" + $this.imgid + "' style='" + style + ";cursor:pointer;width:" + w + "px;height:" + h + "px;' class='" + sclass + "'>";
             var tip = "<div id='" + $this.tipid + "' style='display:none; position:absolute;top:" + y + "px;left:" + x + "px;width:" + w + "px;height:" + h + "px;background-color:#000;text-align:center;cursor:pointer;-moz-opacity: 0.6; opacity:0.6; filter: alpha(opacity=60);color:#fff;padding-top:20%;'>" + tip_text +
                 "<div id='" + $this.delid + "' style='position:absolute;top:5px;right:5px;display:block;' class='easyform-close'></div>" +
                 "</div>";
 
-            this.input.replaceWith(file + img + tip);
+            this.img.replaceWith(file + img + tip);
 
             var imgobj = $("#" + $this.imgid);
             var fileobj = $("#" + $this.fileid);
 
-            var disabled = this.input.attr('disabled');
+            var disabled = this.img.attr('disabled');
 
             if (!disabled)
             {
@@ -225,7 +224,7 @@ if (typeof(get_js_path) == "undefined")
                 {
                     e.stopPropagation();
                     imgobj.attr("src", $this.options.default);
-                    fileobj.val("");    //TODO 删除已选择的文件，未经测试。
+                    fileobj.val("");
                 });
 
                 $("#" + $this.fileid).change(function ()
@@ -274,7 +273,7 @@ if (typeof(get_js_path) == "undefined")
                 document.selection.empty();
             }
 
-            var onchange = this.input.attr("onchange");
+            var onchange = this.img.attr("onchange");
 
             if (!!onchange)
             {
@@ -323,9 +322,7 @@ if (typeof(get_js_path) == "undefined")
 
     $.fn.easyimagefile = function (options)
     {
-
         var eif = new _easyimagefile(this, options);
-
         return eif.init();
     };
 
