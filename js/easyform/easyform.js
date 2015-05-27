@@ -465,7 +465,7 @@ function easy_load_options(id, name)
                 //如果长度设置为 length:6 这样的格式
                 if (range.length == 1) range[1] = range[0];
 
-                var len = v.replace(/[^\x00-\xff]/g, "aa").length;
+                var len = v.replace(/[^\x00-\xff]/g, "a").length;
 
                 if (len < range[0] || len > range[1])
                     return ei._error("length");
