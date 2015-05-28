@@ -197,7 +197,8 @@ if (typeof(easy_load_options) == "undefined")
          * */
         submit: function (submit)
         {
-            this._load();                                                   //重新载入控件
+            // 该处会引起问题，详见158行注释
+            //this._load();                                                   //重新载入控件
             this.result.splice(0, this.result.length);       //清空前一次的结果
 
             this.counter = 0;
