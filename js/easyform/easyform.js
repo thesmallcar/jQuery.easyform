@@ -154,6 +154,10 @@ if (typeof(easy_load_options) == "undefined")
                         }
                     }
 
+
+                    // 因为easyinput只有构造，没有析构，没有释放相关联的控件资源，
+                    // 所以即使从 this.inputs 中删掉，相关的消息处理依然有效（例如real-time规则的blur事件），
+                    // 会造成每点击一次，该规则就会在执行时多执行一遍。
                     var checker = $(input).easyinput({easytip: ev.easytip});
 
                     checker.error = function (e, r)
