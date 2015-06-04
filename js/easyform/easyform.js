@@ -111,7 +111,7 @@ if (typeof(easy_load_options) == "undefined")
         init: function ()
         {
             var $this = this;
-            //$this._load();
+            $this._load();
 
             //改写 submit 的属性，便于控制
             this.submit_button = this.form.find("input:submit");
