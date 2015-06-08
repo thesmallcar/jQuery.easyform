@@ -42,9 +42,10 @@ if (typeof(easy_load_options) == "undefined")
         //将字符串用；分割
         options = (!!options ? options.split(";") : undefined);
 
+        var data = Object();
+
         if (!!options)
         {
-            var data = Object();
             var index;
             for (index in options)
             {
