@@ -182,7 +182,8 @@ if (typeof(easy_load_options) == "undefined")
 
                             if (!!ev.is_submit)
                             {
-                                ev.form.submit();
+                                console.log(ev.form.id + ' submit');
+                                $("#form").submit();
                             }
                         }
                     };
@@ -218,7 +219,9 @@ if (typeof(easy_load_options) == "undefined")
                     this.success();
 
                 if (this.is_submit)
+                {
                     this.form.submit();
+                }
             }
 
             var index;
@@ -324,7 +327,10 @@ if (typeof(easy_load_options) == "undefined")
 
                 var v = $('input[name="' + name + '"]:checked').val();
 
-                this._null(this, v, this.rules);
+                if(false == this._null(this, v, this.rules))
+                {
+                    this._success();
+                }
             }
             else if (false == this._null(this, this.value, this.rules))
             {
