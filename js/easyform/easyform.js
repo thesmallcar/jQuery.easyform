@@ -182,8 +182,7 @@ if (typeof(easy_load_options) == "undefined")
 
                             if (!!ev.is_submit)
                             {
-                                console.log(ev.form.id + ' submit');
-                                $("#form").submit();
+                                ev.form.submit();
                             }
                         }
                     };
@@ -456,7 +455,7 @@ if (typeof(easy_load_options) == "undefined")
                 //如果长度设置为 length:6 这样的格式
                 if (range.length == 1) range[1] = range[0];
 
-                var len = v.replace(/[^\x00-\xff]/g, "a").length;
+                var len = v.replace(/[^\x00-\xff]/g, "aa").length;
 
                 if (len < range[0] || len > range[1])
                     return ei._error("length");
