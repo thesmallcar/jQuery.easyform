@@ -138,7 +138,7 @@ if (typeof(easy_load_options) == "undefined")
 
             this.form.find("input:visible, textarea:visible").each(function (index, input)
             {
-                //排除 hidden、button、submit、checkbox、radio、file
+                //排除 hidden、button、submit、file
                 if (input.type != "hidden" && input.type != "button" && input.type != "submit"
                     && input.type != "file")
                 {
@@ -159,6 +159,7 @@ if (typeof(easy_load_options) == "undefined")
                     // 因为easyinput只有构造，没有析构，没有释放相关联的控件资源，
                     // 所以即使从 this.inputs 中删掉，相关的消息处理依然有效（例如real-time规则的blur事件），
                     // 会造成每点击一次，该规则就会在执行时多执行一遍。
+                    // 该问题已经解决
                     var checker = $(input).easyinput({easytip: ev.easytip});
 
                     checker.error = function (e, r)
@@ -262,7 +263,8 @@ if (typeof(easy_load_options) == "undefined")
         this.success = null;
 
         this.defaults = {
-            easytip: "true"   //是否显示easytip
+            easytip: "true",   //是否显示easytip
+            "realtime": false
         };
 
         this.tip = null;    //关联的tip
@@ -278,7 +280,15 @@ if (typeof(easy_load_options) == "undefined")
             {
                 o["easytip"] = this.rules[index];
             }
+            else if (index == "real-time")
+            {
+                o["realtime"] = true;
+            }
         }
+
+        delete this.rules["easytip"];
+        delete this.rules["real-time"];
+
         this.options = $.extend({}, this.defaults, opt, o);
 
         this.counter = 0;   //计数器，记录已经有多少个条件成功
@@ -300,7 +310,7 @@ if (typeof(easy_load_options) == "undefined")
             var $this = this;
 
             //是否实时检查
-            if (!!this.rules && typeof(this.rules["real-time"]) != "undefined")
+            if (!!this.rules && this.options.realtime)
             {
                 this.input.blur(function ()
                 {
@@ -326,7 +336,7 @@ if (typeof(easy_load_options) == "undefined")
 
                 var v = $('input[name="' + name + '"]:checked').val();
 
-                if(false == this._null(this, v, this.rules))
+                if (false == this._null(this, v, this.rules))
                 {
                     this._success();
                 }
