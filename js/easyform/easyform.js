@@ -163,7 +163,7 @@ if (typeof(easy_load_options) == "undefined")
                         }
                     }
 
-                    var checker = $(input).easyinput({easytip: $this.easytip});
+                    var checker = $(input).easyinput({easytip: $this.options.easytip});
 
                     checker.error = function (e, r)
                     {
@@ -264,7 +264,7 @@ if (typeof(easy_load_options) == "undefined")
         this.success = null;
 
         this.defaults = {
-            "easytip": "true",   //是否显示easytip
+            "easytip": true,   //是否显示easytip
             "real-time": false
         };
 
@@ -303,7 +303,7 @@ if (typeof(easy_load_options) == "undefined")
         init: function ()
         {
             //初始化easytip
-            if ("true" === this.options.easytip)
+            if (true === this.options.easytip)
             {
                 this.tip = $(this.input).easytip();
             }
@@ -313,7 +313,7 @@ if (typeof(easy_load_options) == "undefined")
             //是否实时检查
             if (!!this.rules && this.options["real-time"])
             {
-                this.input.on("blur",function ()
+                this.input.on("blur", function ()
                 {
                     $this.validation();
                 });
@@ -373,7 +373,7 @@ if (typeof(easy_load_options) == "undefined")
 
                 msg = !msg ? "格式错误" : msg;
 
-                if ("true" === this.options.easytip)
+                if (true === this.options.easytip)
                 {
                     this.tip.show(msg);
                 }
@@ -675,7 +675,8 @@ if (typeof(easy_load_options) == "undefined")
                 tip.css({
                     "text-align": "left",
                     "display": "none",
-                    "position": "absolute"
+                    "position": "absolute",
+                    "z-index":9000
                 });
 
                 text.css({
