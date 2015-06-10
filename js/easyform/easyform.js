@@ -28,6 +28,7 @@
 ;
 
 //TODO 缺少执行完毕事件，不能判断是否执行失败，因为error执行了多次
+//TODO real-time条件下，easytip有可能出现显示不同步
 /**
  * 读取一个控件的指定data属性，并通过：和；来分割成key/value值对
  * @id string 控件id
@@ -133,8 +134,15 @@ if (typeof(easy_load_options) == "undefined")
 
         _load: function ()
         {
+            //析构旧的easyinput，防止real-time条件下的重复验证。
+            for (var i in this.inputs)
+            {
+                this.inputs[i].destructor();
+            }
+
             this.inputs.splice(0, this.inputs.length);
-            var ev = this;
+
+            var $this = this;
 
             this.form.find("input:visible, textarea:visible").each(function (index, input)
             {
@@ -146,49 +154,44 @@ if (typeof(easy_load_options) == "undefined")
                     {
                         var name = input.name;
 
-                        for (index in  ev.inputs)
+                        for (index in  $this.inputs)
                         {
-                            if (name == ev.inputs[index].input[0].name)
+                            if (name == $this.inputs[index].input[0].name)
                             {
                                 return;
                             }
                         }
                     }
 
-
-                    // 因为easyinput只有构造，没有析构，没有释放相关联的控件资源，
-                    // 所以即使从 this.inputs 中删掉，相关的消息处理依然有效（例如real-time规则的blur事件），
-                    // 会造成每点击一次，该规则就会在执行时多执行一遍。
-                    // 该问题已经解决
-                    var checker = $(input).easyinput({easytip: ev.easytip});
+                    var checker = $(input).easyinput({easytip: $this.easytip});
 
                     checker.error = function (e, r)
                     {
-                        ev.is_submit = false;
-                        ev.result.push(e);
+                        $this.is_submit = false;
+                        $this.result.push(e);
 
-                        if (!!ev.error)    //失败事件
-                            ev.error(ev, e, r);
+                        if (!!$this.error)    //失败事件
+                            $this.error($this, e, r);
                     };
 
                     checker.success = function (e)
                     {
-                        ev.counter++;
-                        if (ev.counter == ev.inputs.length)
+                        $this.counter++;
+                        if ($this.counter == $this.inputs.length)
                         {
-                            ev.counter = 0;
+                            $this.counter = 0;
 
-                            if (!!ev.success)    //成功事件
-                                ev.success(ev);
+                            if (!!$this.success)    //成功事件
+                                $this.success($this);
 
-                            if (!!ev.is_submit)
+                            if (!!$this.is_submit)
                             {
-                                ev.form.submit();
+                                $this.form.submit();
                             }
                         }
                     };
 
-                    ev.inputs.push(checker);
+                    $this.inputs.push(checker);
                 }
             });
         },
@@ -199,8 +202,7 @@ if (typeof(easy_load_options) == "undefined")
          * */
         submit: function (submit)
         {
-            // 该处会引起问题，详见158行注释
-            //this._load();                                                   //重新载入控件
+            this._load();                                                   //重新载入控件
             this.result.splice(0, this.result.length);       //清空前一次的结果
 
             this.counter = 0;
@@ -241,7 +243,6 @@ if (typeof(easy_load_options) == "undefined")
         return validation.init();
     };
 
-
 })(jQuery, window, document);
 
 //easyinput
@@ -263,8 +264,8 @@ if (typeof(easy_load_options) == "undefined")
         this.success = null;
 
         this.defaults = {
-            easytip: "true",   //是否显示easytip
-            "realtime": false
+            "easytip": "true",   //是否显示easytip
+            "real-time": false
         };
 
         this.tip = null;    //关联的tip
@@ -282,7 +283,7 @@ if (typeof(easy_load_options) == "undefined")
             }
             else if (index == "real-time")
             {
-                o["realtime"] = true;
+                o["real-time"] = true;
             }
         }
 
@@ -310,9 +311,9 @@ if (typeof(easy_load_options) == "undefined")
             var $this = this;
 
             //是否实时检查
-            if (!!this.rules && this.options.realtime)
+            if (!!this.rules && this.options["real-time"])
             {
-                this.input.blur(function ()
+                this.input.on("blur",function ()
                 {
                     $this.validation();
                 });
@@ -600,6 +601,18 @@ if (typeof(easy_load_options) == "undefined")
                 else
                     return ei._success_rule("regex");
             }
+        },
+
+        destructor: function ()
+        {
+            //重置事件
+            this.error = null;
+            this.success = null;
+
+            //解除实时验证
+            this.input.off("blur");
+
+            delete this;
         }
     };
 
