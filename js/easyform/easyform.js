@@ -66,7 +66,9 @@ if (typeof(easy_load_options) == "undefined")
                 }
 
                 if (temp[0].length > 0)
+                {
                     data[temp[0]] = temp[1];
+                }
             }
         }
 
@@ -95,15 +97,17 @@ if (typeof(easy_load_options) == "undefined")
 
         this.options = $.extend({}, this.defaults, opt);
 
-        this.result = [];
+        //this.result = [];
         this.inputs = [];
 
-        this.counter = 0;   //已经判断成功的input计数
+        this.counter_success = 0;   //已经判断成功的input计数
+        this.counter = 0;                   //已经判断的input计数
         this.is_submit = true;  //是否提交，如果为false，即使验证成功也不会执行提交
 
         //事件定义
         this.success = null;
         this.error = null;
+        this.complete = null;
         this.per_validation = null;     //在所有验证之前执行
     };
 
@@ -168,21 +172,48 @@ if (typeof(easy_load_options) == "undefined")
                     checker.error = function (e, r)
                     {
                         $this.is_submit = false;
-                        $this.result.push(e);
+                        //$this.result.push(e);
 
                         if (!!$this.error)    //失败事件
+                        {
                             $this.error($this, e, r);
+                        }
+
+                        if ($this.counter == $this.inputs.length)
+                        {
+                            if (!!$this.complete)    //结束事件
+                            {
+                                $this.complete($this);
+                            }
+                        }
+                    };
+
+                    checker.complete = function (e)
+                    {
+                        $this.counter++;    //计数
+
+                        if ($this.counter == $this.inputs.length)
+                        {
+                            if (!!$this.complete)    //结束事件
+                            {
+                                $this.complete($this);
+                            }
+                        }
                     };
 
                     checker.success = function (e)
                     {
-                        $this.counter++;
-                        if ($this.counter == $this.inputs.length)
+                        $this.counter_success++;    //成功计数
+
+                        if ($this.counter_success == $this.inputs.length)
                         {
+                            $this.counter_success = 0;
                             $this.counter = 0;
 
                             if (!!$this.success)    //成功事件
+                            {
                                 $this.success($this);
+                            }
 
                             if (!!$this.is_submit)
                             {
@@ -203,8 +234,9 @@ if (typeof(easy_load_options) == "undefined")
         submit: function (submit)
         {
             this._load();                                                   //重新载入控件
-            this.result.splice(0, this.result.length);       //清空前一次的结果
+            //this.result.splice(0, this.result.length);       //清空前一次的结果
 
+            this.counter_success = 0;
             this.counter = 0;
             this.is_submit = submit;
 
@@ -218,7 +250,14 @@ if (typeof(easy_load_options) == "undefined")
             if (this.inputs.length == 0)
             {
                 if (!!this.success)    //成功事件
-                    this.success();
+                {
+                    this.success(this);
+                }
+
+                if (!!this.complete)    //结束事件
+                {
+                    this.complete(this);
+                }
 
                 if (this.is_submit)
                 {
@@ -232,7 +271,6 @@ if (typeof(easy_load_options) == "undefined")
                 this.inputs[index].validation();
             }
         }
-
     };
 
     //添加到jquery
@@ -262,6 +300,8 @@ if (typeof(easy_load_options) == "undefined")
         //事件
         this.error = null;
         this.success = null;
+        this.complete = null;
+
 
         this.defaults = {
             "easytip": true,   //是否显示easytip
@@ -292,7 +332,8 @@ if (typeof(easy_load_options) == "undefined")
 
         this.options = $.extend({}, this.defaults, opt, o);
 
-        this.counter = 0;   //计数器，记录已经有多少个条件成功
+        this.counter_success = 0;   //计数器，记录已经有多少个条件成功
+        this.counter = 0;                   //计数器，记录已经验证了多少条件
 
         this.is_error = false;      //错误标志
     };
@@ -328,7 +369,8 @@ if (typeof(easy_load_options) == "undefined")
         validation: function ()
         {
             this.value = this.input.val();
-            this.counter = 0;   //计数器清零
+            this.counter_success = 0;   //计数器清零
+            this.counter = 0;
             this.is_error = false;
 
             if (this.input.attr("type") == "radio" || this.input.attr("type") == "checkbox")
@@ -348,7 +390,9 @@ if (typeof(easy_load_options) == "undefined")
                 {
                     //调用条件函数
                     if (!!this.judge[index])
+                    {
                         this.judge[index](this, this.value, this.rules[index]);
+                    }
                 }
 
                 //如果没有写任何规则
@@ -361,15 +405,27 @@ if (typeof(easy_load_options) == "undefined")
 
         _error: function (rule)
         {
+            this.counter++;
+
             if (!!this.error)
+            {
                 this.error(this.input[0], rule);
+            }
+
+
+            if (!!this.complete && this.counter == Object.keys(this.rules).length)
+            {
+                this.complete(this.input[0]);
+            }
 
             if (false == this.is_error)
             {
                 var msg = $(this.input).data("message-" + rule);
 
                 if (!msg)
+                {
                     msg = $(this.input).data("message");
+                }
 
                 msg = !msg ? "格式错误" : msg;
 
@@ -387,17 +443,27 @@ if (typeof(easy_load_options) == "undefined")
         _success: function ()
         {
             if (!!this.success)
+            {
                 this.success(this.input);
+            }
 
             return true;
         },
 
         _success_rule: function (rule)
         {
-            this.counter += 1;
+            this.counter++;
+            this.counter_success++;
 
-            if (this.counter == Object.keys(this.rules).length)
+            if (!!this.complete && this.counter == Object.keys(this.rules).length)
+            {
+                this.complete(this.input[0]);
+            }
+
+            if (this.counter_success == Object.keys(this.rules).length)
+            {
                 this._success();
+            }
 
             return true;
         },
@@ -430,33 +496,49 @@ if (typeof(easy_load_options) == "undefined")
             "char-normal": function (ei, v, p)
             {
                 if (false == /^\w+$/.test(v))
+                {
                     return ei._error("char-normal");
+                }
                 else
+                {
                     return ei._success_rule("char-normal");
+                }
             },
 
             "char-chinese": function (ei, v, p)
             {
                 if (false == /^([\w]|[\u4e00-\u9fa5]|[ 。，、？￥“”‘’！：【】《》（）——.,?!$'":+-])+$/.test(v))
+                {
                     return ei._error("char-chinese");
+                }
                 else
+                {
                     return ei._success_rule("char-chinese");
+                }
             },
 
             "char-english": function (ei, v, p)
             {
                 if (false == /^([\w]|[ .,?!$'":+-])+$/.test(v))
+                {
                     return ei._error("char-english");
+                }
                 else
+                {
                     return ei._success_rule("char-english");
+                }
             },
 
             "email": function (ei, v, p)
             {
                 if (false == /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(v))
+                {
                     return ei._error("email");
+                }
                 else
+                {
                     return ei._success_rule("email");
+                }
             },
 
             "length": function (ei, v, p)
@@ -464,23 +546,34 @@ if (typeof(easy_load_options) == "undefined")
                 var range = p.split(" ");
 
                 //如果长度设置为 length:6 这样的格式
-                if (range.length == 1) range[1] = range[0];
+                if (range.length == 1)
+                {
+                    range[1] = range[0];
+                }
 
                 var len = v.replace(/[^\x00-\xff]/g, "aa").length;
 
                 if (len < range[0] || len > range[1])
+                {
                     return ei._error("length");
+                }
                 else
+                {
                     return ei._success_rule("length");
+                }
             },
 
             "equal": function (ei, v, p)
             {
                 var pair = $(p);
                 if (0 == pair.length || pair.val() != v)
+                {
                     return ei._error("equal");
+                }
                 else
+                {
                     return ei._success_rule("equal");
+                }
             },
 
             "ajax": function (ei, v, p)
@@ -493,9 +586,13 @@ if (typeof(easy_load_options) == "undefined")
                     ei.input.unbind("easyform-ajax");
 
                     if (false == p)
+                    {
                         return ei._error("ajax");
+                    }
                     else
+                    {
                         return ei._success_rule("ajax");
+                    }
                 });
 
                 eval(p);
@@ -504,41 +601,61 @@ if (typeof(easy_load_options) == "undefined")
             "date": function (ei, v, p)
             {
                 if (false == /^(\d{4})-(\d{2})-(\d{2})$/.test(v))
+                {
                     return ei._error("date");
+                }
                 else
+                {
                     return ei._success_rule("date");
+                }
             },
 
             "time": function (ei, v, p)
             {
                 if (false == /^(\d{2}):(\d{2}):(\d{2})$/.test(v))
+                {
                     return ei._error("time");
+                }
                 else
+                {
                     return ei._success_rule(v);
+                }
             },
 
             "datetime": function (ei, v, p)
             {
                 if (false == /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.test(v))
+                {
                     return ei._error("datetime");
+                }
                 else
+                {
                     return ei._success_rule("datetime");
+                }
             },
 
             "money": function (ei, v, p)
             {
                 if (false == /^([1-9][\d]{0,10}|0)(\.[\d]{1,2})?$/.test(v))
+                {
                     return ei._error("money");
+                }
                 else
+                {
                     return ei._success_rule("money");
+                }
             },
 
             "number": function (ei, v, p)
             {
                 if (false == /^\d{1,}$/.test(v))
+                {
                     return ei._error("number");
+                }
                 else
+                {
                     return ei._success_rule("number");
+                }
             },
 
             "float": function (ei, v, p)
@@ -559,10 +676,13 @@ if (typeof(easy_load_options) == "undefined")
                 var pattern = new RegExp("^([1-9][\\d]{0," + range[0] + "}|0)(\\.[\\d]{1," + range[1] + "})?$");
 
                 if (false == pattern.test(v))
+                {
                     return ei._error("float");
-
+                }
                 else
+                {
                     return ei._success_rule("float");
+                }
             },
 
             "uint": function (ei, v, p)
@@ -586,9 +706,13 @@ if (typeof(easy_load_options) == "undefined")
                 range[1] = parseInt(range[1]);
 
                 if (isNaN(v) || isNaN(range[0]) || isNaN(range[1]) || v < range[0] || v > range[1] || v < 0)
+                {
                     return ei._error("uint");
+                }
                 else
+                {
                     return ei._success_rule("uint");
+                }
             },
 
             "regex": function (ei, v, p)
@@ -596,10 +720,13 @@ if (typeof(easy_load_options) == "undefined")
                 var pattern = new RegExp(p);
 
                 if (false == pattern.test(v))
+                {
                     return ei._error("regex");
-
+                }
                 else
+                {
                     return ei._success_rule("regex");
+                }
             }
         },
 
@@ -638,7 +765,8 @@ if (typeof(easy_load_options) == "undefined")
         }
 
         this.defaults = {
-            left: 0, top: 0,
+            left: 0,
+            top: 0,
             position: "right",           //top, left, bottom, right
             disappear: "other",       //self, other, lost-focus, none, N seconds
             speed: "fast",
@@ -676,7 +804,7 @@ if (typeof(easy_load_options) == "undefined")
                     "text-align": "left",
                     "display": "none",
                     "position": "absolute",
-                    "z-index":9000
+                    "z-index": 9000
                 });
 
                 text.css({
@@ -771,7 +899,10 @@ if (typeof(easy_load_options) == "undefined")
             var text = $("#" + this.id + " .easytip-text");
             var arrow = $("#" + this.id + " .easytip-arrow");
             var offset = $(this.parent).offset();
-            var size = {width: $(this.parent).outerWidth(), height: $(this.parent).outerHeight()};
+            var size = {
+                width: $(this.parent).outerWidth(),
+                height: $(this.parent).outerHeight()
+            };
 
             switch (this.options.position)
             {
@@ -840,7 +971,10 @@ if (typeof(easy_load_options) == "undefined")
 
             tip.fadeIn(speed, function ()
             {
-                if (!!onshow)    onshow(parent, tip[0]);
+                if (!!onshow)
+                {
+                    onshow(parent, tip[0]);
+                }
 
                 if (!isNaN(disappear))
                 {
@@ -849,7 +983,10 @@ if (typeof(easy_load_options) == "undefined")
                     {
                         tip.fadeOut(speed, function ()
                         {
-                            if (!!onclose)    onclose(parent, tip[0]);
+                            if (!!onclose)
+                            {
+                                onclose(parent, tip[0]);
+                            }
                         });
 
                     }, disappear);
@@ -862,7 +999,10 @@ if (typeof(easy_load_options) == "undefined")
                         {
                             tip.fadeOut(speed, function ()
                             {
-                                if (!!onclose)   onclose(parent, tip[0]);
+                                if (!!onclose)
+                                {
+                                    onclose(parent, tip[0]);
+                                }
                                 $(document).unbind("click", $this._fun_cache[tip[0].id]);
                             });
                         }
@@ -870,7 +1010,10 @@ if (typeof(easy_load_options) == "undefined")
                         {
                             tip.fadeOut(speed, function ()
                             {
-                                if (!!onclose)    onclose(parent, tip[0]);
+                                if (!!onclose)
+                                {
+                                    onclose(parent, tip[0]);
+                                }
                                 $(document).unbind("click", $this._fun_cache[tip[0].id]);
                             });
                         }
@@ -882,7 +1025,10 @@ if (typeof(easy_load_options) == "undefined")
                     {
                         tip.fadeOut(speed, function ()
                         {
-                            if (!!onclose)    onclose(parent, tip[0]);
+                            if (!!onclose)
+                            {
+                                onclose(parent, tip[0]);
+                            }
                             $(parent).unbind("focusout");
                         });
                     });
@@ -898,7 +1044,10 @@ if (typeof(easy_load_options) == "undefined")
 
             tip.fadeOut(this.options.speed, function ()
             {
-                if (!!onclose)    onclose(parent, tip[0]);
+                if (!!onclose)
+                {
+                    onclose(parent, tip[0]);
+                }
             });
         }
     };

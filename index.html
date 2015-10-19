@@ -39,7 +39,7 @@
     <a class="link title-ani" href="http://thesmallcar.github.io/jQuery.easyform/" target="_blank" data-letters="Easyform">Easyform</a>
     <br>
 
-    <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/blob/master/release/release%20v1.2.2.zip?raw=true">download v1.2.2</a>
+    <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/blob/master/release/release%20v1.2.3.zip?raw=true">download v1.2.2</a>
     <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform" target="_blank">github</a>
 
 </div>
@@ -375,6 +375,14 @@
                 <td>$("#form").easyform({easytip:true});</td>
                 <td>data-easyform="easytip:false;"</td>
             </tr>
+            <tr>
+                <td>is_submit</td>
+                <td>是否执行提交，该值为false时，将不执行提交。</td>
+                <td>true/false</td>
+                <td>true</td>
+                <td>ef = $("#form").easyform(); ef.is_submit = false;</td>
+                <td>不能在HTML中赋值</td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -412,6 +420,15 @@
             </td>
         </tr>
         <tr>
+            <td>complete</td>
+            <td>完成事件，表单完整验证一次后，触发该事件。该事件优先级低于error和success。</td>
+            <td>easyform</td>
+            <td>
+                var ef = $('#demo-form').easyform();<br>
+                ef.error = function(ef){ ... }
+            </td>
+        </tr>
+        <tr>
             <td>per_validation</td>
             <td>预验证事件，在所有验证规则之前执行。该事件的响应函数如果返回false，则会打断提交。</td>
             <td>easyform</td>
@@ -428,6 +445,7 @@
 <section id="content11">
 
     <ul>
+        <li>2015-10-19 为easyinput类增加了complete事件。</li>
         <li>2015-6-10 为easyinput类添加了一个析构函数，用于修正real-time下的重复验证问题，该修正是对前几次针对这个问题的修正的优化处理。</li>
         <li>2015-6-9 修正了规则计数错误，和real-time属性相关(感谢梦在远方的指正)。</li>
         <li>2015-6-8 修正了一个和radio、checkbox相关的bug。修正了一个和提交相关的bug。</li>
@@ -710,11 +728,22 @@
 
         $('#demo-form').easyform();
 
+        v.is_submit = false;
+
         v.error = function (ef, i, r)
         {
-            /*if(i.id=="uid" && r == "length" )
-             alert("Error事件：" + i.id + "对象的值不符合" + r + "规则");*/
-        }
+            //console.log("Error事件：" + i.id + "对象的值不符合" + r + "规则");
+        };
+
+        v.success = function (ef)
+        {
+            //console.log("成功");
+        };
+
+        v.complete = function (ef)
+        {
+            console.log("完成");
+        };
     });
 
     function ajax_demo(p)
