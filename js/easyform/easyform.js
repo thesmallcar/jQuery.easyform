@@ -27,8 +27,6 @@
  * */
 ;
 
-//TODO 缺少执行完毕事件，不能判断是否执行失败，因为error执行了多次
-//TODO real-time条件下，easytip有可能出现显示不同步
 /**
  * 读取一个控件的指定data属性，并通过：和；来分割成key/value值对
  * @id string 控件id
@@ -177,14 +175,6 @@ if (typeof(easy_load_options) == "undefined")
                         if (!!$this.error)    //失败事件
                         {
                             $this.error($this, e, r);
-                        }
-
-                        if ($this.counter == $this.inputs.length)
-                        {
-                            if (!!$this.complete)    //结束事件
-                            {
-                                $this.complete($this);
-                            }
                         }
                     };
 
@@ -411,7 +401,6 @@ if (typeof(easy_load_options) == "undefined")
             {
                 this.error(this.input[0], rule);
             }
-
 
             if (!!this.complete && this.counter == Object.keys(this.rules).length)
             {
@@ -948,7 +937,22 @@ if (typeof(easy_load_options) == "undefined")
             tip.css("top", parseInt(this.options.top) + top);
         },
 
-        show: function (msg)
+        close: function (fn)
+        {
+            var tip = $("#" + this.id);
+            var parent = this.parent;
+            var onclose = this.options.onclose;
+
+            //onclose事件
+            if (!!onclose)
+            {
+                onclose(parent, tip[0]);
+            }
+
+            tip.fadeOut(this.options.speed, fn);
+        },
+
+        _show: function ()
         {
             var tip = $("#" + this.id);
             var text = $("#" + this.id + " .easytip-text");
@@ -956,38 +960,16 @@ if (typeof(easy_load_options) == "undefined")
             var speed = this.options.speed;
             var disappear = this.options.disappear;
             var parent = this.parent;
-
-            text.html(msg);
-
-            this._size();
-            this._css();
-            this._position();
-            this._arrow();
-
             var $this = this;
-
-            var onshow = this.options.onshow;
-            var onclose = this.options.onclose;
 
             tip.fadeIn(speed, function ()
             {
-                if (!!onshow)
-                {
-                    onshow(parent, tip[0]);
-                }
-
                 if (!isNaN(disappear))
                 {
                     //如果disappear是数字，则倒计时disappear毫秒后消失
                     setTimeout(function ()
                     {
-                        tip.fadeOut(speed, function ()
-                        {
-                            if (!!onclose)
-                            {
-                                onclose(parent, tip[0]);
-                            }
-                        });
+                        $this.close();
 
                     }, disappear);
                 }
@@ -997,23 +979,16 @@ if (typeof(easy_load_options) == "undefined")
                     {
                         if (disappear == "self" && e.target == text[0])
                         {
-                            tip.fadeOut(speed, function ()
+                            $this.close(function ()
                             {
-                                if (!!onclose)
-                                {
-                                    onclose(parent, tip[0]);
-                                }
                                 $(document).unbind("click", $this._fun_cache[tip[0].id]);
                             });
+
                         }
                         else if (disappear == "other" && e.target != tip[0])
                         {
-                            tip.fadeOut(speed, function ()
+                            $this.close(function ()
                             {
-                                if (!!onclose)
-                                {
-                                    onclose(parent, tip[0]);
-                                }
                                 $(document).unbind("click", $this._fun_cache[tip[0].id]);
                             });
                         }
@@ -1023,12 +998,8 @@ if (typeof(easy_load_options) == "undefined")
                 {
                     $(parent).focusout(function ()
                     {
-                        tip.fadeOut(speed, function ()
+                        $this.close(function ()
                         {
-                            if (!!onclose)
-                            {
-                                onclose(parent, tip[0]);
-                            }
                             $(parent).unbind("focusout");
                         });
                     });
@@ -1036,19 +1007,45 @@ if (typeof(easy_load_options) == "undefined")
             });
         },
 
-        close: function ()
+        show: function (msg)
         {
             var tip = $("#" + this.id);
+            var text = $("#" + this.id + " .easytip-text");
+            var arrow = $("#" + this.id + " .easytip-arrow");
+            var speed = this.options.speed;
+            var disappear = this.options.disappear;
             var parent = this.parent;
-            var onclose = this.options.onclose;
+            var $this = this;
+            var onshow = this.options.onshow;
 
-            tip.fadeOut(this.options.speed, function ()
+            text.html(msg);
+
+            this._size();
+            this._css();
+            this._position();
+            this._arrow();
+
+            if ("none" == tip.css("display"))
             {
-                if (!!onclose)
+                //onshow事件
+                if (!!onshow)
                 {
-                    onclose(parent, tip[0]);
+                    onshow(parent, tip[0]);
                 }
-            });
+                $this._show();
+            }
+            else
+            {
+                tip.hide(1, function ()
+                {
+                    if (!!onshow)
+                    {
+                        onshow(parent, tip[0]);
+                    }
+
+                    $this._show();
+                });
+            }
         }
     };
 
