@@ -376,6 +376,8 @@ if (typeof(easy_load_options) == "undefined")
             }
             else if (false == this._null(this, this.value, this.rules))
             {
+                delete this.rules.null;
+
                 for (var index in this.rules)
                 {
                     //调用条件函数
@@ -747,6 +749,7 @@ if (typeof(easy_load_options) == "undefined")
     var _easytip = function (ele, opt)
     {
         this.parent = ele;
+        this.is_show = false;
 
         if (0 == this.parent.length)
         {
@@ -756,13 +759,14 @@ if (typeof(easy_load_options) == "undefined")
         this.defaults = {
             left: 0,
             top: 0,
-            position: "right",           //top, left, bottom, right
-            disappear: "other",       //self, other, lost-focus, none, N seconds
+            position: "right",          //top, left, bottom, right
+            disappear: "other",       	//self, other, lost-focus, none, N seconds, out
             speed: "fast",
             class: "easy-white",
-            arrow: "bottom",          //top, left, bottom, right 自动，手动配置无效
+            arrow: "bottom",          	//top, left, bottom, right 自动，手动配置无效
             onshow: null,               //事件
-            onclose: null               //事件
+            onclose: null,               //事件
+            hover_show: "false"			//鼠标移动到绑定目标时，是否自动出现
         };
 
         this._fun_cache = Object();    //响应函数缓存，用来保存show里面自动添加的click函数，以便于后面的unbind针对性的一个一个删除
@@ -780,6 +784,8 @@ if (typeof(easy_load_options) == "undefined")
         init: function ()
         {
             var tip = $("#" + this.id);
+
+            var $this = this;
 
             //同一个控件不会多次初始化。
             if (tip.length == 0)
@@ -812,6 +818,19 @@ if (typeof(easy_load_options) == "undefined")
                     "position": "absolute",
                     "border": "10px solid"
                 });
+
+                if (this.options.hover_show == "true")
+                {
+                    this.options.disappear = "none";
+                    this.options.speed = 1;
+                    this.parent.hover(function ()
+                    {
+                        $this.show();
+                    }, function ()
+                    {
+                        $this.close();
+                    });
+                }
             }
 
             return this;
@@ -942,6 +961,7 @@ if (typeof(easy_load_options) == "undefined")
             var tip = $("#" + this.id);
             var parent = this.parent;
             var onclose = this.options.onclose;
+            this.is_show = false;
 
             //onclose事件
             if (!!onclose)
@@ -961,6 +981,13 @@ if (typeof(easy_load_options) == "undefined")
             var disappear = this.options.disappear;
             var parent = this.parent;
             var $this = this;
+            this.is_show = true;
+
+            if (this.options.hover_show == "true")
+            {
+                tip.show();
+                return;
+            }
 
             tip.fadeIn(speed, function ()
             {
@@ -1004,6 +1031,7 @@ if (typeof(easy_load_options) == "undefined")
                         });
                     });
                 }
+
             });
         },
 
@@ -1017,6 +1045,11 @@ if (typeof(easy_load_options) == "undefined")
             var parent = this.parent;
             var $this = this;
             var onshow = this.options.onshow;
+
+            if (!msg)
+            {
+                msg = parent.data("easytip-message");
+            }
 
             text.html(msg);
 

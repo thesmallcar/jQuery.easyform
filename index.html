@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="css/tab.css">
 
     <script src="js/jquery-2.1.0.min.js"></script>
-    <script src="js/easyform/easyform-min.js"></script>
+    <script src="js/easyform/easyform.js"></script>
 
     <script>
         var _hmt = _hmt || [];
@@ -39,7 +39,7 @@
     <a class="link title-ani" href="http://thesmallcar.github.io/jQuery.easyform/" target="_blank" data-letters="Easyform">Easyform</a>
     <br>
 
-    <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/blob/master/release/release%20v1.2.3.zip?raw=true">download v1.2.3</a>
+    <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/blob/master/release/release%20v1.2.4.zip?raw=true">download v1.2.3</a>
     <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform" target="_blank">github</a>
 
 </div>
@@ -443,6 +443,7 @@
 <section id="content11">
 
     <ul>
+        <li>2015-11-28 修正了一处null规则可能引起表单不能提交的bug。</li>
         <li>2015-10-19 为easyinput类增加了complete事件。修正了在real-time规则下，easytip的状态同步问题。</li>
         <li>2015-6-10 为easyinput类添加了一个析构函数，用于修正real-time下的重复验证问题，该修正是对前几次针对这个问题的修正的优化处理。</li>
         <li>2015-6-9 修正了规则计数错误，和real-time属性相关(感谢梦在远方的指正)。</li>
@@ -566,7 +567,7 @@
     <label for="tab21">说明</label>
 
     <input id="tab22" type="radio" name="tabs4" class="tab-input">
-    <label for="tab22">配置</label>
+    <label for="tab22">属性</label>
 
     <input id="tab23" type="radio" name="tabs4" class="tab-input">
     <label for="tab23">方法</label>
@@ -650,6 +651,30 @@
                 <td>easy-white</td>
                 <td>$("#uid").easytip({class:"easy-red"});<br>data-easytip="class:easy-red;"</td>
             </tr>
+
+            <tr>
+                <td>parent</td>
+                <td>easytip的宿主，即easytip指向的对象。</td>
+                <td>Document Object</td>
+                <td>无</td>
+                <td>只读，不可赋值</td>
+            </tr>
+
+            <tr>
+                <td>hover_show</td>
+                <td>鼠标移动到parent时，是否显示tip，即作为一个tooltip来使用。注意：此属性将与表单验证的相关设置有冲突，所以一旦使用hover_show = "true"。表单验证时，该parent的tip显示将不受easyform控制。</td>
+                <td>string</td>
+                <td>false</td>
+                <td>$("#uid").easytip({hover_show:"true"});<br>data-easytip="class:true;"</td>
+            </tr>
+            <tr>
+                <td>is_show</td>
+                <td>是否显示</td>
+                <td>bool</td>
+                <td>false</td>
+                <td>只读，不可赋值</td>
+            </tr>
+
             </tbody>
         </table>
     </section>
@@ -712,6 +737,13 @@
 
 </div>
 
+<div id="tip-test1" class="tooltip-demo" data-easytip="position:top;hover_show:true;class:easy-black;" data-easytip-message="一个例子">easytip例子</div>
+<div id="tip-test2" class="tooltip-demo" data-easytip="position:left;hover_show:true;" data-easytip-message="一个例子">easytip例子</div>
+<div id="tip-test3" class="tooltip-demo" data-easytip="position:bottom;hover_show:true;class:easy-red;" data-easytip-message="一个例子">easytip例子</div>
+<div id="tip-test4" class="tooltip-demo" data-easytip="position:right;hover_show:true;class:easy-blue;" data-easytip-message="一个例子">easytip例子</div>
+
+<br class="clear">
+
 <div class="footer">
     十分感谢你的光临，如果有什么问题，可以加QQ群，222578556（Hello PHP），我是群主：大树。
 </div>
@@ -742,6 +774,14 @@
         {
             console.log("完成");
         };
+
+        $('#tip-test1').easytip();
+        $('#tip-test2').easytip();
+        $('#tip-test3').easytip();
+        $('#tip-test4').easytip();
+
+
+
     });
 
     function ajax_demo(p)

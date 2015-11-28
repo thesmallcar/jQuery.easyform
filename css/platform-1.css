@@ -749,3 +749,13 @@ section ul {
 {
     background-color: #3c6db0;
 }
+
+.tooltip-demo
+{
+    border: 1px solid #bbb;
+    border-radius: 2px;
+    padding: 5px 5px;
+    width:200px;
+    float: left;
+    margin: 0 20px;
+}
