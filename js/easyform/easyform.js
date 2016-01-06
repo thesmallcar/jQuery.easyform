@@ -24,6 +24,19 @@
  *      number              不限长度的数字字符串
  *      float:7 2
  *      regex:"^(\\d{4})-(\\d{2})-(\\d{2})$"
+ *      mobile              手机
+ * */
+
+ /*
+ * 更新日志
+ * Author: 郑大柱(galandeo)
+ * 2015/12/6
+ *
+ * --修复 BUG
+ *    该BUG导致因元素未设置ID值而引发不能弹出提示的BUG
+ * --增加 mobile验证
+ *    增加mobile规则验证
+ *
  * */
 ;
 
@@ -34,9 +47,11 @@
  **/
 if (typeof(easy_load_options) == "undefined")
 {
-    function easy_load_options(id, name)
+    // function easy_load_options(id, name) // # by galandeo, fix bug
+    function easy_load_options(obj, name)
     {
-        var options = $("#" + id).data(name);
+        var options = $(obj).data(name);
+        // var options = $("#" + id).data(name);
 
         //将字符串用；分割
         options = (!!options ? options.split(";") : undefined);
@@ -301,7 +316,8 @@ if (typeof(easy_load_options) == "undefined")
         this.tip = null;    //关联的tip
 
         //读取 data-easyform属性
-        this.rules = easy_load_options(input[0].id, "easyform");
+        // this.rules = easy_load_options(input[0].id, "easyform"); // # by galandeo, fix bug
+        this.rules = easy_load_options(input[0], "easyform");
 
         //处理data-easyform中的配置属性
         var o = Object();
@@ -530,6 +546,14 @@ if (typeof(easy_load_options) == "undefined")
                 {
                     return ei._success_rule("email");
                 }
+            },
+
+            "mobile": function (ei, v, p)
+            {
+                if (false == /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/.test(v))
+                    return ei._error("mobile");
+                else
+                    return ei._success_rule("mobile");
             },
 
             "length": function (ei, v, p)
@@ -772,7 +796,8 @@ if (typeof(easy_load_options) == "undefined")
         this._fun_cache = Object();    //响应函数缓存，用来保存show里面自动添加的click函数，以便于后面的unbind针对性的一个一个删除
 
         //从控件的 data-easytip中读取配置信息
-        var data = easy_load_options(ele[0].id, "easytip");
+        // var data = easy_load_options(ele[0].id, "easytip"); // # by galandeo, fix bug
+        var data = easy_load_options(ele[0], "easytip");
 
         this.options = $.extend({}, this.defaults, opt, data);
 
