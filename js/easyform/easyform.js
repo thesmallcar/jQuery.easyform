@@ -27,7 +27,7 @@
  *      mobile              手机
  * */
 
- /*
+/*
  * 更新日志
  * Author: 郑大柱(galandeo)
  * 2015/12/6
@@ -387,7 +387,10 @@ if (typeof(easy_load_options) == "undefined")
 
                 if (false == this._null(this, v, this.rules))
                 {
-                    this._success();
+                    if (false == this.is_error)
+                    {
+                        this._success();
+                    }
                 }
             }
             else if (false == this._null(this, this.value, this.rules))
@@ -551,9 +554,13 @@ if (typeof(easy_load_options) == "undefined")
             "mobile": function (ei, v, p)
             {
                 if (false == /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/.test(v))
+                {
                     return ei._error("mobile");
+                }
                 else
+                {
                     return ei._success_rule("mobile");
+                }
             },
 
             "length": function (ei, v, p)
