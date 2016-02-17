@@ -88,6 +88,7 @@ input.tab-input:checked + label {
 #tab7:checked ~ #content7,
 #tab8:checked ~ #content8,
 #tab9:checked ~ #content9,
+#tab92:checked ~ #content92,
 #tab10:checked ~ #content10,
 #tab11:checked ~ #content11,
 #tab12:checked ~ #content12,
