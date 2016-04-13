@@ -117,8 +117,8 @@ if (typeof(easy_load_options) == "undefined")
         //this.result = [];
         this.inputs = [];
 
-        this.counter_success = 0;   //已经判断成功的input计数
-        this.counter = 0;                   //已经判断的input计数
+        this.counter_success = [];   //已经判断成功的input计数
+        this.counter = [];                   //已经判断的input计数
         this.is_submit = true;  //是否提交，如果为false，即使验证成功也不会执行提交
 
         //事件定义
@@ -126,6 +126,8 @@ if (typeof(easy_load_options) == "undefined")
         this.error = this.options.success;
         this.complete = this.options.complete;
         this.per_validation = this.options.per_validation;     //在所有验证之前执行
+
+        this._check_back = null;
     };
 
     //方法
@@ -160,13 +162,13 @@ if (typeof(easy_load_options) == "undefined")
                 iterator = "input:visible, textarea:visible";
             }
 
-            //析构旧的easyinput，防止real-time条件下的重复验证。
             for (var i in this.inputs)
             {
                 this.inputs[i].destructor();
             }
 
-            this.inputs.splice(0, this.inputs.length);
+            //析构旧的easyinput，防止real-time条件下的重复验证。
+            this._array_empty(this.inputs);
 
             var $this = this;
 
@@ -204,7 +206,8 @@ if (typeof(easy_load_options) == "undefined")
 
                     checker.complete = function (e)
                     {
-                        $this.counter++;    //计数
+                        //记录已经完成检查的input
+                        $this._array_add_unique($this.counter, (!!e.id ? e.id : e.name));
 
                         if ($this.counter == $this.inputs.length)
                         {
@@ -212,17 +215,24 @@ if (typeof(easy_load_options) == "undefined")
                             {
                                 $this.complete($this);
                             }
+
+                            if (!!$this._check_back)
+                            {
+                                $this._check_back($this._is_success());
+                                $this._check_back = null;
+                            }
                         }
                     };
 
                     checker.success = function (e)
                     {
-                        $this.counter_success++;    //成功计数
+                        //记录检查成功的控件
+                        $this._array_add_unique($this.counter_success, (!!e.id ? e.id : e.name));
 
-                        if ($this.counter_success == $this.inputs.length)
+                        if ($this._is_success())
                         {
-                            $this.counter_success = 0;
-                            $this.counter = 0;
+                            $this._array_empty($this.counter_success);
+                            $this._array_empty($this.counter);
 
                             if (!!$this.success)    //成功事件
                             {
@@ -241,10 +251,29 @@ if (typeof(easy_load_options) == "undefined")
             });
         },
 
+        _is_success: function ()
+        {
+            return this.inputs.length == this.counter_success.length;
+        },
+
+        _array_empty: function (arr)
+        {
+            arr.splice(0, arr.length);
+        },
+
+        _array_add_unique: function (arr, value)
+        {
+            if (-1 == arr.indexOf(value))
+            {
+                arr.push(value);
+            }
+        },
+
         _check: function (submit)
         {
-            this.counter_success = 0;
-            this.counter = 0;
+            this._array_empty(this.counter_success);
+            this._array_empty(this.counter);
+
             this.is_submit = submit;
 
             //执行per_validation事件
@@ -290,13 +319,15 @@ if (typeof(easy_load_options) == "undefined")
             this._check(submit);        //验证并提交
         },
 
-        check: function (iterator)
+        check: function (iterator, fun)
         {
             this._load(iterator);       //重新载入控件
 
             this._check(false);        //验证不提交
 
-            return this.counter == this.counter_success;
+            this._check_back = fun;
+
+            //return this.counter == this.counter_success;
         }
     };
 
@@ -476,7 +507,7 @@ if (typeof(easy_load_options) == "undefined")
         {
             if (!!this.success)
             {
-                this.success(this.input);
+                this.success(this.input[0]);
             }
 
             return true;
