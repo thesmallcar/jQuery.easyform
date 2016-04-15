@@ -9,3 +9,7 @@ easyform是表单验证插件，支持复杂的表单验证规则，并且使用
 
 表单验证，就是这么简单！
 
+手册 & 示例 请参考：
+
+http://thesmallcar.github.io/jQuery.easyform/ 
+
