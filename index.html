@@ -40,7 +40,7 @@
         <a class="link title-ani" href="http://thesmallcar.github.io/jQuery.easyform/" target="_blank" data-letters="Easyform">Easyform</a>
         <br>
 
-        <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/blob/master/release/release%20v1.2.8.zip?raw=true">download v1.2.8</a>
+        <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform/blob/master/release/release%20v1.2.9.zip?raw=true">download v1.2.9</a>
         <a class="bt" href="https://github.com/thesmallcar/jQuery.easyform" target="_blank">github</a>
 
     </div>
@@ -54,7 +54,7 @@
                     <td><input name="uid" type="text" id="uid"
                                data-easyform="length:4 16;char-normal;real-time;ajax:ajax_demo(1);"
                                data-message="用户名必须为4—16位的英文字母或数字"
-                               data-easytip="position:top;class:easy-blue;" data-message-ajax="用户名已存在!">
+                               data-easytip="position:top;class:easy-red;" data-message-ajax="用户名已存在!">
                     </td>
                 </tr>
                 <tr>
@@ -149,7 +149,7 @@
 
         <section id="content3">
             <p>
-                兼容各种主流浏览器，IE10+，其余各种浏览器都没有问题。包括手机上，不过该控件并不是针对手机设计的，所以并没有针对手机做效率优化和操作上的优化。
+                兼容各种主流浏览器，IE9+，其余各种浏览器都没有问题。包括手机上，不过该控件并不是针对手机设计的，所以并没有针对手机做效率优化和操作上的优化。
             </p>
 
             <p>顺便提一句，别拿这个页面验证兼容性，这个页面很多细节都是html5的，但这些只是为了好看，和控件本身无关。并且因为样式表的兼容性问题，该页面在IE8下面根本无法工作。</p>
@@ -420,6 +420,15 @@
                         ef.check("input[type=text]", function(bool){ ...... });
                     </td>
                 </tr>
+                <tr>
+                    <td>show</td>
+                    <td>显示自定义消息</td>
+                    <td>@iterator string 选择器，用来指定为哪些控件自定义消息。<br>@msg string 自定义消息。</td>
+                    <td>
+                        var ef = $('#demo-form').easyform();<br>
+                        ef.show("#uid", "自定义消息");
+                    </td>
+                </tr>
                 </tbody>
             </table>
 
@@ -431,7 +440,7 @@
                 <thead>
                 <tr>
                     <th width="80">事件</th>
-                    <th width="500">说明</th>
+                    <th width="400">说明</th>
                     <th width="80">参数</th>
                     <th>示例</th>
                 </tr>
@@ -490,6 +499,42 @@
                         });
                     </td>
                 </tr>
+
+                <tr>
+                    <td>easyform-error</td>
+                    <td>控件验证失败事件，与error事件不同，该事件作用于控件本身，当控件发生错误就会立即触发，而不是easyform完全验证后才触发。</td>
+                    <td>e, input, rule</td>
+                    <td>
+                        $("#uid").on("easyform-error", function (e, input, rule)<br>
+                        {<br>
+                        ......<br>
+                        });
+                    </td>
+                </tr>
+                <tr>
+                    <td>easyform-success</td>
+                    <td>控件验证成功事件，与success事件不同，该事件作用于控件本身，当控件验证成功就会立即触发，而不是easyform完全验证后才触发。</td>
+                    <td>e, input, rule</td>
+                    <td>
+                        $("#uid").on("easyform-success", function (e, input, rule)<br>
+                        {<br>
+                        ......<br>
+                        });
+                    </td>
+                </tr>
+                <tr>
+                    <td>easyform-success-rule</td>
+                    <td>控件单个规则验证成功事件，该事件当一个控件的某个规则验证成功后即触发。事件名称为easyform-success-[规则名称]。</td>
+                    <td>e, input</td>
+                    <td>
+                        $("#uid").on("easyform-success-length", function (e, input)<br>
+                        {<br>
+                        ......<br>
+                        });
+                    </td>
+                </tr>
+
+
                 </tbody>
             </table>
 
@@ -498,6 +543,7 @@
         <section id="content11">
 
             <ul>
+                <li>2016-4-15 新增easyform.show方法。新增3个控件验证事件。</li>
                 <li>2016-4-13 为easyform.check方法添加了一个回调函数。改正了一处real-time模式下，引起的检测错误。</li>
                 <li>2016-2-17 easyform的事件支持在初始化的时候配置了。支持表单的部分验证。添加了身份证验证规则。</li>
                 <li>2015-11-28 修正了一处null规则可能引起表单不能提交的bug。</li>
@@ -821,6 +867,7 @@
 
         v.error = function (ef, i, r)
         {
+            v.show("#email", "自定义消息");
             //console.log("Error事件：" + i.id + "对象的值不符合" + r + "规则");
         };
 
@@ -839,6 +886,10 @@
         $('#tip-test3').easytip();
         $('#tip-test4').easytip();
 
+        $("#uid").on("easyform-success-length", function (e, input)
+        {
+            alert("#uid的长度正确！");
+        });
 
     });
 

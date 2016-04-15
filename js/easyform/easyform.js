@@ -114,7 +114,6 @@ if (typeof(easy_load_options) == "undefined")
 
         this.options = $.extend({}, this.defaults, opt);
 
-        //this.result = [];
         this.inputs = [];
 
         this.counter_success = [];   //已经判断成功的input计数
@@ -326,8 +325,23 @@ if (typeof(easy_load_options) == "undefined")
             this._check(false);        //验证不提交
 
             this._check_back = fun;
+        },
 
-            //return this.counter == this.counter_success;
+        show: function (iterator, msg)
+        {
+            if (!iterator)
+            {
+                iterator = "input:visible, textarea:visible";
+            }
+
+            this.form.find(iterator).each(function (index, input)
+            {
+                if (input.type != "hidden" && input.type != "button" && input.type != "submit"
+                    && input.type != "file")
+                {
+                    $(this).easytip().show(msg);
+                }
+            });
         }
     };
 
@@ -359,7 +373,6 @@ if (typeof(easy_load_options) == "undefined")
         this.error = null;
         this.success = null;
         this.complete = null;
-
 
         this.defaults = {
             "easytip": true,   //是否显示easytip
@@ -467,6 +480,11 @@ if (typeof(easy_load_options) == "undefined")
             }
         },
 
+        show: function (msg)
+        {
+            this.tip.show(msg);
+        },
+
         _error: function (rule)
         {
             this.counter++;
@@ -475,6 +493,8 @@ if (typeof(easy_load_options) == "undefined")
             {
                 this.error(this.input[0], rule);
             }
+
+            $(this.input).trigger("easyform-error", [this.input, rule]);
 
             if (!!this.complete && this.counter == Object.keys(this.rules).length)
             {
@@ -507,6 +527,7 @@ if (typeof(easy_load_options) == "undefined")
         {
             if (!!this.success)
             {
+                $(this.input).trigger("easyform-success", [this.input]);
                 this.success(this.input[0]);
             }
 
@@ -517,6 +538,8 @@ if (typeof(easy_load_options) == "undefined")
         {
             this.counter++;
             this.counter_success++;
+
+            $(this.input).trigger("easyform-success-" + rule, [this.input]);
 
             if (!!this.complete && this.counter == Object.keys(this.rules).length)
             {
