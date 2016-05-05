@@ -210,6 +210,9 @@ if (typeof(easy_load_options) == "undefined")
 
                         if ($this.counter == $this.inputs.length)
                         {
+                            $this._array_empty($this.counter_success);
+                            $this._array_empty($this.counter);
+
                             if (!!$this.complete)    //结束事件
                             {
                                 $this.complete($this);
@@ -428,7 +431,7 @@ if (typeof(easy_load_options) == "undefined")
             {
                 this.input.on("blur", function ()
                 {
-                    $this.validation();
+                    $this.validation(true);
                 });
             }
 
@@ -438,7 +441,7 @@ if (typeof(easy_load_options) == "undefined")
         /**
          * 规则判断
          * */
-        validation: function ()
+        validation: function (real_time)
         {
             this.value = this.input.val();
             this.counter_success = 0;   //计数器清零
@@ -472,11 +475,15 @@ if (typeof(easy_load_options) == "undefined")
                     }
                 }
 
+
+                /*
+                * 忘记当初为什么这么写了，该部分会导致null的规则失效，所以注释掉了。2016-4-21 大树
+                * */
                 //如果没有写任何规则
-                if (Object.keys(this.rules).length == 0)
+                /*if (Object.keys(this.rules).length == 0)
                 {
                     this._success();
-                }
+                }*/
             }
         },
 
