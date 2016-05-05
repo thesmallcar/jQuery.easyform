@@ -454,7 +454,7 @@ if (typeof(easy_load_options) == "undefined")
 
                 var v = $('input[name="' + name + '"]:checked').val();
 
-                if (false == this._null(this, v, this.rules))
+                if (false == this._null(this, v, this.rules, {"realtime": real_time}))
                 {
                     if (false == this.is_error)
                     {
@@ -462,7 +462,7 @@ if (typeof(easy_load_options) == "undefined")
                     }
                 }
             }
-            else if (false == this._null(this, this.value, this.rules))
+            else if (false == this._null(this, this.value, this.rules, {"realtime": real_time}))
             {
                 delete this.rules.null;
 
@@ -471,19 +471,18 @@ if (typeof(easy_load_options) == "undefined")
                     //调用条件函数
                     if (!!this.judge[index])
                     {
-                        this.judge[index](this, this.value, this.rules[index]);
+                        this.judge[index](this, this.value, this.rules[index], {"realtime": real_time});
                     }
                 }
 
-
                 /*
-                * 忘记当初为什么这么写了，该部分会导致null的规则失效，所以注释掉了。2016-4-21 大树
-                * */
+                 * 忘记当初为什么这么写了，该部分会导致null的规则失效，所以注释掉了。2016-4-21 大树
+                 * */
                 //如果没有写任何规则
                 /*if (Object.keys(this.rules).length == 0)
-                {
-                    this._success();
-                }*/
+                 {
+                 this._success();
+                 }*/
             }
         },
 
@@ -492,7 +491,7 @@ if (typeof(easy_load_options) == "undefined")
             this.tip.show(msg);
         },
 
-        _error: function (rule)
+        _error: function (rule, option)
         {
             this.counter++;
 
@@ -503,7 +502,7 @@ if (typeof(easy_load_options) == "undefined")
 
             $(this.input).trigger("easyform-error", [this.input, rule]);
 
-            if (!!this.complete && this.counter == Object.keys(this.rules).length)
+            if (!option.realtime && !!this.complete && this.counter == Object.keys(this.rules).length)
             {
                 this.complete(this.input[0]);
             }
@@ -541,19 +540,19 @@ if (typeof(easy_load_options) == "undefined")
             return true;
         },
 
-        _success_rule: function (rule)
+        _success_rule: function (rule, option)
         {
             this.counter++;
             this.counter_success++;
 
             $(this.input).trigger("easyform-success-" + rule, [this.input]);
 
-            if (!!this.complete && this.counter == Object.keys(this.rules).length)
+            if (!option.realtime && !!this.complete && this.counter == Object.keys(this.rules).length)
             {
                 this.complete(this.input[0]);
             }
 
-            if (this.counter_success == Object.keys(this.rules).length)
+            if (!option.realtime && this.counter_success == Object.keys(this.rules).length)
             {
                 this._success();
             }
@@ -561,18 +560,25 @@ if (typeof(easy_load_options) == "undefined")
             return true;
         },
 
-        _null: function (ei, v, r)
+        _null: function (ei, v, r, o)
         {
             if (!v)
             {
                 //rule不为空并且含有null
                 if (!!r && typeof(r["null"]) != "undefined")
                 {
-                    return ei._success();
+                    if (false == o.realtime)
+                    {
+                        return ei._success();
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
                 else
                 {
-                    return ei._error("null");
+                    return ei._error("null", o);
                 }
             }
             else
@@ -586,67 +592,67 @@ if (typeof(easy_load_options) == "undefined")
          * 通过对judge添加成员函数，可以扩充规则
          * */
         judge: {
-            "char-normal": function (ei, v, p)
+            "char-normal": function (ei, v, p, o)
             {
                 if (false == /^\w+$/.test(v))
                 {
-                    return ei._error("char-normal");
+                    return ei._error("char-normal", o);
                 }
                 else
                 {
-                    return ei._success_rule("char-normal");
+                    return ei._success_rule("char-normal", o);
                 }
             },
 
-            "char-chinese": function (ei, v, p)
+            "char-chinese": function (ei, v, p, o)
             {
                 if (false == /^([\w]|[\u4e00-\u9fa5]|[ 。，、？￥“”‘’！：【】《》（）——.,?!$'":+-])+$/.test(v))
                 {
-                    return ei._error("char-chinese");
+                    return ei._error("char-chinese", o);
                 }
                 else
                 {
-                    return ei._success_rule("char-chinese");
+                    return ei._success_rule("char-chinese", o);
                 }
             },
 
-            "char-english": function (ei, v, p)
+            "char-english": function (ei, v, p, o)
             {
                 if (false == /^([\w]|[ .,?!$'":+-])+$/.test(v))
                 {
-                    return ei._error("char-english");
+                    return ei._error("char-english", o);
                 }
                 else
                 {
-                    return ei._success_rule("char-english");
+                    return ei._success_rule("char-english", o);
                 }
             },
 
-            "email": function (ei, v, p)
+            "email": function (ei, v, p, o)
             {
                 if (false == /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(v))
                 {
-                    return ei._error("email");
+                    return ei._error("email", o);
                 }
                 else
                 {
-                    return ei._success_rule("email");
+                    return ei._success_rule("email", o);
                 }
             },
 
-            "mobile": function (ei, v, p)
+            "mobile": function (ei, v, p, o)
             {
                 if (false == /^(0|86|17951)?(1)(3[0-9]|4[0-9]|5[0-9]|7[0-9]|8[0-9])[0-9]{8}$/.test(v))
                 {
-                    return ei._error("mobile");
+                    return ei._error("mobile", o);
                 }
                 else
                 {
-                    return ei._success_rule("mobile");
+                    return ei._success_rule("mobile", o);
                 }
             },
 
-            "length": function (ei, v, p)
+            "length": function (ei, v, p, o)
             {
                 var range = p.split(" ");
 
@@ -660,15 +666,15 @@ if (typeof(easy_load_options) == "undefined")
 
                 if (len < range[0] || len > range[1])
                 {
-                    return ei._error("length");
+                    return ei._error("length", o);
                 }
                 else
                 {
-                    return ei._success_rule("length");
+                    return ei._success_rule("length", o);
                 }
             },
 
-            "idcard": function (ei, v, p)
+            "idcard": function (ei, v, p, o)
             {
                 /*
                  * 身份证15位编码规则：dddddd yymmdd xx p
@@ -714,11 +720,11 @@ if (typeof(easy_load_options) == "undefined")
                         {
                             if (idCardLast == "X" || idCardLast == "x")
                             {
-                                return ei._success_rule("idcard");
+                                return ei._success_rule("idcard", o);
                             }
                             else
                             {
-                                return ei._error("idcard");
+                                return ei._error("idcard", o);
                             }
                         }
                         else
@@ -726,35 +732,35 @@ if (typeof(easy_load_options) == "undefined")
                             //用计算出的验证码与最后一位身份证号码匹配，如果一致，说明通过，否则是无效的身份证号码
                             if (idCardLast == idCardY[idCardMod])
                             {
-                                return ei._success_rule("idcard");
+                                return ei._success_rule("idcard", o);
                             }
                             else
                             {
-                                return ei._error("idcard");
+                                return ei._error("idcard", o);
                             }
                         }
                     }
                 }
                 else
                 {
-                    return ei._error("idcard");
+                    return ei._error("idcard", o);
                 }
             },
 
-            "equal": function (ei, v, p)
+            "equal": function (ei, v, p, o)
             {
                 var pair = $(p);
                 if (0 == pair.length || pair.val() != v)
                 {
-                    return ei._error("equal");
+                    return ei._error("equal", o);
                 }
                 else
                 {
-                    return ei._success_rule("equal");
+                    return ei._success_rule("equal", o);
                 }
             },
 
-            "ajax": function (ei, v, p)
+            "ajax": function (ei, v, p, o)
             {
                 // 为ajax处理注册自定义事件
                 // HTML中执行相关的AJAX时，需要发送事件 easyform-ajax 来通知 easyinput
@@ -765,11 +771,11 @@ if (typeof(easy_load_options) == "undefined")
 
                     if (false == p)
                     {
-                        return ei._error("ajax");
+                        return ei._error("ajax", o);
                     }
                     else
                     {
-                        return ei._success_rule("ajax");
+                        return ei._success_rule("ajax", o);
                     }
                 });
 
@@ -780,7 +786,7 @@ if (typeof(easy_load_options) == "undefined")
             {
                 if (false == /^(\d{4})-(\d{2})-(\d{2})$/.test(v))
                 {
-                    return ei._error("date");
+                    return ei._error("date", o);
                 }
                 else
                 {
@@ -788,55 +794,55 @@ if (typeof(easy_load_options) == "undefined")
                 }
             },
 
-            "time": function (ei, v, p)
+            "time": function (ei, v, p, o)
             {
                 if (false == /^(\d{2}):(\d{2}):(\d{2})$/.test(v))
                 {
-                    return ei._error("time");
+                    return ei._error("time", o);
                 }
                 else
                 {
-                    return ei._success_rule(v);
+                    return ei._success_rule("time", o);
                 }
             },
 
-            "datetime": function (ei, v, p)
+            "datetime": function (ei, v, p, o)
             {
                 if (false == /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.test(v))
                 {
-                    return ei._error("datetime");
+                    return ei._error("datetime", o);
                 }
                 else
                 {
-                    return ei._success_rule("datetime");
+                    return ei._success_rule("datetime", o);
                 }
             },
 
-            "money": function (ei, v, p)
+            "money": function (ei, v, p, o)
             {
                 if (false == /^([1-9][\d]{0,10}|0)(\.[\d]{1,2})?$/.test(v))
                 {
-                    return ei._error("money");
+                    return ei._error("money", o);
                 }
                 else
                 {
-                    return ei._success_rule("money");
+                    return ei._success_rule("money", o);
                 }
             },
 
-            "number": function (ei, v, p)
+            "number": function (ei, v, p, o)
             {
                 if (false == /^\d{1,}$/.test(v))
                 {
-                    return ei._error("number");
+                    return ei._error("number", o);
                 }
                 else
                 {
-                    return ei._success_rule("number");
+                    return ei._success_rule("number", o);
                 }
             },
 
-            "float": function (ei, v, p)
+            "float": function (ei, v, p, o)
             {
                 var range = p.split(" ");
 
@@ -844,7 +850,7 @@ if (typeof(easy_load_options) == "undefined")
                 //必须定义整数和小数的位数
                 if (range.length != 2)
                 {
-                    return ei._error("float");
+                    return ei._error("float", o);
                 }
                 else if (range[0] + range[1] > 16)
                 {
@@ -855,15 +861,15 @@ if (typeof(easy_load_options) == "undefined")
 
                 if (false == pattern.test(v))
                 {
-                    return ei._error("float");
+                    return ei._error("float", o);
                 }
                 else
                 {
-                    return ei._success_rule("float");
+                    return ei._success_rule("float", o);
                 }
             },
 
-            "uint": function (ei, v, p)
+            "uint": function (ei, v, p, o)
             {
                 v = parseInt(v);
 
@@ -885,25 +891,25 @@ if (typeof(easy_load_options) == "undefined")
 
                 if (isNaN(v) || isNaN(range[0]) || isNaN(range[1]) || v < range[0] || v > range[1] || v < 0)
                 {
-                    return ei._error("uint");
+                    return ei._error("uint", o);
                 }
                 else
                 {
-                    return ei._success_rule("uint");
+                    return ei._success_rule("uint", o);
                 }
             },
 
-            "regex": function (ei, v, p)
+            "regex": function (ei, v, p, o)
             {
                 var pattern = new RegExp(p);
 
                 if (false == pattern.test(v))
                 {
-                    return ei._error("regex");
+                    return ei._error("regex", o);
                 }
                 else
                 {
-                    return ei._success_rule("regex");
+                    return ei._success_rule("regex", o);
                 }
             }
         },

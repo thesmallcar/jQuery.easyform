@@ -543,6 +543,7 @@
         <section id="content11">
 
             <ul>
+                <li>2016-5-5 修正了realtime模式下的两个bug，该bug会导致部分条件下表单在错误的时机提交。（感谢群里的小徐同学指出bug）</li>
                 <li>2016-4-15 新增easyform.show方法。新增3个控件验证事件。</li>
                 <li>2016-4-13 为easyform.check方法添加了一个回调函数。改正了一处real-time模式下，引起的检测错误。</li>
                 <li>2016-2-17 easyform的事件支持在初始化的时候配置了。支持表单的部分验证。添加了身份证验证规则。</li>
@@ -867,7 +868,7 @@
 
         v.error = function (ef, i, r)
         {
-            v.show("#email", "自定义消息");
+            //v.show("#email", "自定义消息");
             //console.log("Error事件：" + i.id + "对象的值不符合" + r + "规则");
         };
 
