@@ -122,7 +122,7 @@ if (typeof(easy_load_options) == "undefined")
 
         //事件定义
         this.success = this.options.success;
-        this.error = this.options.success;
+        this.error = this.options.error;
         this.complete = this.options.complete;
         this.per_validation = this.options.per_validation;     //在所有验证之前执行
 
