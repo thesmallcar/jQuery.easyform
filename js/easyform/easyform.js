@@ -99,6 +99,8 @@ if (typeof(easy_load_options) == "undefined")
     {
         this.form = ele;
 
+        this.id = Math.random();
+
         if (0 == this.form.length && "form" != this.form[0].localName)
         {
             throw new Error("easyform need a form !");
@@ -114,10 +116,7 @@ if (typeof(easy_load_options) == "undefined")
 
         this.options = $.extend({}, this.defaults, opt);
 
-        this.inputs = [];
 
-        this.counter_success = [];   //已经判断成功的input计数
-        this.counter = [];                   //已经判断的input计数
         this.is_submit = true;  //是否提交，如果为false，即使验证成功也不会执行提交
 
         //事件定义
@@ -134,6 +133,10 @@ if (typeof(easy_load_options) == "undefined")
 
         init: function ()
         {
+            this.inputs = [];
+            this.counter_success = [];   //已经判断成功的input计数
+            this.counter = [];                   //已经判断的input计数
+
             var $this = this;
             $this._load();
 
@@ -208,10 +211,10 @@ if (typeof(easy_load_options) == "undefined")
                         //记录已经完成检查的input
                         $this._array_add_unique($this.counter, (!!e.id ? e.id : e.name));
 
-                        if ($this.counter == $this.inputs.length)
+                        if ($this.counter.length == $this.inputs.length)
                         {
-                            $this._array_empty($this.counter_success);
-                            $this._array_empty($this.counter);
+                            //$this._array_empty($this.counter_success);
+                            //$this._array_empty($this.counter);
 
                             if (!!$this.complete)    //结束事件
                             {
@@ -233,8 +236,8 @@ if (typeof(easy_load_options) == "undefined")
 
                         if ($this._is_success())
                         {
-                            $this._array_empty($this.counter_success);
-                            $this._array_empty($this.counter);
+                            //$this._array_empty($this.counter_success);
+                            //$this._array_empty($this.counter);
 
                             if (!!$this.success)    //成功事件
                             {
@@ -306,7 +309,7 @@ if (typeof(easy_load_options) == "undefined")
             var index;
             for (index in this.inputs)
             {
-                this.inputs[index].validation();
+                this.inputs[index].validation(false);
             }
         },
 
@@ -458,7 +461,7 @@ if (typeof(easy_load_options) == "undefined")
                 {
                     if (false == this.is_error)
                     {
-                        this._success();
+                        this._success({"realtime": real_time});
                     }
                 }
             }
@@ -468,21 +471,16 @@ if (typeof(easy_load_options) == "undefined")
 
                 for (var index in this.rules)
                 {
+                    if (index == undefined)
+                    {
+                        continue;
+                    }
                     //调用条件函数
                     if (!!this.judge[index])
                     {
                         this.judge[index](this, this.value, this.rules[index], {"realtime": real_time});
                     }
                 }
-
-                /*
-                 * 忘记当初为什么这么写了，该部分会导致null的规则失效，所以注释掉了。2016-4-21 大树
-                 * */
-                //如果没有写任何规则
-                /*if (Object.keys(this.rules).length == 0)
-                 {
-                 this._success();
-                 }*/
             }
         },
 
@@ -529,8 +527,13 @@ if (typeof(easy_load_options) == "undefined")
             return false;
         },
 
-        _success: function ()
+        _success: function (option)
         {
+            if (!option.realtime && !!this.complete)
+            {
+                this.complete(this.input[0]);
+            }
+
             if (!!this.success)
             {
                 $(this.input).trigger("easyform-success", [this.input]);
@@ -547,14 +550,9 @@ if (typeof(easy_load_options) == "undefined")
 
             $(this.input).trigger("easyform-success-" + rule, [this.input]);
 
-            if (!option.realtime && !!this.complete && this.counter == Object.keys(this.rules).length)
-            {
-                this.complete(this.input[0]);
-            }
-
             if (!option.realtime && this.counter_success == Object.keys(this.rules).length)
             {
-                this._success();
+                this._success(option);
             }
 
             return true;
@@ -569,7 +567,7 @@ if (typeof(easy_load_options) == "undefined")
                 {
                     if (false == o.realtime)
                     {
-                        return ei._success();
+                        return ei._success(o);
                     }
                     else
                     {
@@ -580,6 +578,21 @@ if (typeof(easy_load_options) == "undefined")
                 {
                     return ei._error("null", o);
                 }
+            }
+            //当控件没有规则
+            else if (Object.keys(r).length == 0)
+            {
+                if (!o.realtime && !!this.complete)
+                {
+                    this.complete(this.input[0]);
+                }
+
+                if (!!v)
+                {
+                    return ei._success(o);
+                }
+
+                return false;
             }
             else
             {
