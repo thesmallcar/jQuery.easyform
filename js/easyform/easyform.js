@@ -795,7 +795,7 @@ if (typeof(easy_load_options) == "undefined")
                 eval(p);
             },
 
-            "date": function (ei, v, p)
+            "date": function (ei, v, p, o)
             {
                 if (false == /^(\d{4})-(\d{2})-(\d{2})$/.test(v))
                 {
@@ -803,7 +803,11 @@ if (typeof(easy_load_options) == "undefined")
                 }
                 else
                 {
-                    return ei._success_rule("date");
+                    //Modify by Martin 2016/06/13
+                    return ei._success_rule("date", o);
+                    //Modify end
+                    
+                    //return ei._success_rule("date");
                 }
             },
 
