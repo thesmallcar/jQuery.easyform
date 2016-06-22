@@ -326,11 +326,11 @@ if (typeof(easy_load_options) == "undefined")
 
         check: function (iterator, fun)
         {
+            this._check_back = fun;
+
             this._load(iterator);       //重新载入控件
 
             this._check(false);        //验证不提交
-
-            this._check_back = fun;
         },
 
         show: function (iterator, msg)
@@ -529,15 +529,15 @@ if (typeof(easy_load_options) == "undefined")
 
         _success: function (option)
         {
-            if (!option.realtime && !!this.complete)
-            {
-                this.complete(this.input[0]);
-            }
-
             if (!!this.success)
             {
                 $(this.input).trigger("easyform-success", [this.input]);
                 this.success(this.input[0]);
+            }
+
+            if (!option.realtime && !!this.complete)
+            {
+                this.complete(this.input[0]);
             }
 
             return true;
